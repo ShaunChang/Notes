@@ -358,42 +358,6 @@ https://blog.csdn.net/qq_33840251/article/details/88774613
 2、在做数据查询时，建议用Get方式；而在做数据添加、修改或删除时，建议用Post方式；
 以上就是get请求和post请求的区别有哪些？的详细内容，更多请关注php中文网其它相关文章！
 
-# 34 mockMVC
-如何使用
--成员变量加入mockMVC：
-private MockMvc mockmvc;
-
--在@BeforeEach方法下初始化mockmvc  可以只通过自己要测的那个类初始化 这样加载的资源就少环境相对干净
-写法一：
-类名上加springbootest注释
-@BeforeEach
-void setup(){
- mockmvc = MockMvcBuilders.standaloneSetup(new 你要测的类名()).build();}
-写法二： 在测试类名上加@WebMvcTest(xxxx.class) 然后在下面直接autowired mockmvc beforeeach也不要了 
-
--在测试类中用perform模拟请求然后用andExpect测试是否符合预期：
-@Test
-void xxx(){
-get请求：mockmvc.perform(MockMvcRequestBuilder.get("controller  url"))
-post请求：mockmvc.perform(MockMvcRequestBuilders.post("url").content(asJsonString(new User(xx,"xxx","xxx"))).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-.andDO(print())
-.andExpect(status().isok())
-.andExpect(content().string("xxx"))}
-.andExpect(jsonPath("$.id").value("xxx"))   就是测响应的json里具体某个属性的值
-小坑：applciation starter failed ：找不到。。dao 原因是没有把所有要的类扫描 记住这是一个“干净”的环境
-方法一：@WebMvcTest({IndexController.class,UserDao.class})
-方法二：@ComponentScan(basePackages = {"com.tobacco.casemanagement"})
-class IndexControllerTest {
-    @Autowired
-    private MockMvc mvc;
-
-    @Test
-    void loginController() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/login?username=cxc&password=123"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
 # 35 @ResponseStatus   @Notblank @pattern
 -REscontroller方法上用 指定返回状态
 -Not类成员变量用 规定不为空  注意洗完后要用的话在引用变量前加@valide   但是在局部变量可以直接用！！！！
@@ -677,10 +641,11 @@ aspect框架
 做entity和dto之间的转化。比如把user转化为其他dto。。。。
 ## 如何使用
 ### 传统
--创建UserMapper类
--类上加@component：不加就无法在service这样用：private final UserMapper
+-创建UserMapper类   
+-类上加@component：不加就无法在service这样用：private final UserMapper   
 -在service里引入：private final UserMapper
 ### Mapper插件
+
 
 ### builder
 
@@ -692,4 +657,69 @@ aspect框架
 注意同一个类不要使用两种引入方式，要么用private final，要么用@Autowried
 
 
-56 
+# 56 unit test
+## 什么是unit test
+前端来说一个组件测试，后端来说一般指一个类的测试
+## unit test的意义是什么或者说为什么不直接弄个class在里面写测试
+你想想，现在比如要测试dao文件，如果不用单元测试，那势必会执行dao中的数据库操作，如果此时你的数据库没有启动起来，首先这一步你就错了，后面的dao的结果肯定错。你的工作重心是在dao层的代码逻辑，而你的测试却是由一个不相干的数据库的问题而导致了失败。很冤枉。所以在unit case中所有的依赖部分的代码和数据可以自己模拟，那个方法其实压根就没有执行。一句话，单元测试目的是排除干扰。
+## service等普通类测试步骤
+1 类上加@ExtendWith(MockitoExtension.class)  
+2 用@mock引入测试此类中用到的额外的成员变量  
+3 用@InjectMocks注解引入你想测试的类 
+4 import static org.mockito.Mockito.*;  
+5 测试方法
+其中写when 。。thenreturn中写的都是你要测的那个方法中用到的外部方法，这些方法在上面已经被mock过了，所以是假的，代码走到那儿的话不会执行，你要模拟执行一遍，返回假数据。那么为什么要把这些mock呢？直接用不就行了。原因是为了保证这个测试的纯粹。本测试不想测试这些依赖方法，就用mock的方式模拟返回数据
+
+```java
+private final UserDTto mockUserDto = UserDto.builder().email("xxx").name("xxx").builde();
+
+@Test
+void xxxTest(){
+    Long userId = 1L;
+    when(userMapper.mapUserDtoToUser(userdto)).thenReturn(user);
+    UserDto userdto = userservice.getUser(userId);
+    //有返回值用asserequals
+    asserEquals(userdto,mockUserDto)
+    //无返回值用verify
+
+
+}
+```
+
+## mockMVC
+1 成员变量加入mockMVC：  
+private MockMvc mockmvc;  
+2 在@BeforeEach方法下初始化mockmvc 可以只通过自己要测的那个类初始化 这样加载的资源就少环境相对干净  
+写法一：
+类名上加springbootest注释
+@BeforeEach
+void setup(){
+ mockmvc = MockMvcBuilders.standaloneSetup(new 你要测的类名()).build();}  
+ 写法二： 在测试类名上加@WebMvcTest(xxxx.class) 然后在下面直接autowired mockmvc beforeeach也不要了   
+3 在测试类中用perform模拟请求然后用andExpect测试是否符合预期：
+```java
+@Test
+void xxx(){
+get请求：mockmvc.perform(MockMvcRequestBuilder.get("controller  url"))
+post请求：mockmvc.perform(MockMvcRequestBuilders.post("url").content(asJsonString(new User(xx,"xxx","xxx"))).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+.andDO(print())
+.andExpect(status().isok())
+.andExpect(content().string("xxx"))}
+.andExpect(jsonPath("$.id").value("xxx"))   就是测响应的json里具体某个属性的值
+```
+小坑：applciation starter failed ：找不到。。dao 原因是没有把所有要的类扫描 记住这是一个“干净”的环境   
+解决方法一：@WebMvcTest({IndexController.class,UserDao.class}) .  
+解决方法二：
+```java
+@ComponentScan(basePackages = {"com.tobacco.casemanagement"})
+class IndexControllerTest {
+    @Autowired
+    private MockMvc mvc;
+
+    @Test
+    void loginController() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/login?username=cxc&password=123"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+```
