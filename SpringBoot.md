@@ -305,19 +305,23 @@ server.servlet.context-path=xxxx
 -Bean的创建和使用
 https://blog.csdn.net/liuyueyi25/article/details/83244239
 
-# 30 登录功能实现
+# 30 controller接收请求参数的几种方法：@RequestParameter @RequestBody @pathvaiblaes @param（value="xx"）实体类 字符串
 @Requestbody和@RequestParameter
 Requestbody意思是取出post请求body中的数据 在变量前用这个意思是要把这个封装到指定的对象里
-RequestParameter就是正常form中传过来的值 
-@RequestParameterhe和@pathvaiblaes
-@pathvariable(name="xxx")与@requestmapping（“/user/{xxx}”）中的xxx对应
-@ResttController：
-@RestController注解相当于@ResponseBody和@Controller的结合
-@RestController注解时，返回的是内容实例
+RequestParameter就是正常form中通过name传过来的值 
+@pathvaiblaes：就是url路径里的值：@pathvariable(name="xxx")与@requestmapping（“/user/{xxx}”）中的xxx对应
+@param（value="xx"）：用在变量前，就是给变量规定名字，经常在mapper（mybaties）中用到
+@ResttController：相当于@ResponseBody和@Controller的结合。返回的是字符串
+## 为什么要用requestparam接收参数而不是直接用变量？
+写上reqeust这个注解就表示请里必须要有相关字段参数，如果没有就直接返回4xx的报错。4xx的报错意思是错误是用户自己导致的。如果不同，就不会有这种过滤功能。有没有参数都会进哪个controller方法。这对资源是一种浪费
+
+
+参考：
+https://blog.csdn.net/weixin_46141585/article/details/117391904
+
 ## 小坑：页面跳转后url不对
 登录成功后重定向到某个页面 不然登录后url显示：xxx?user=xx,pws=xx
 return "redirect:/xxx"
-
 
 ## 小坑：There was an unexpected error (type=Bad Request, status=400). Required String parameter 'username' is not present
 -一旦我们在方法中定义了@RequestParam变量，如果访问的URL中不带有相应的参数，就会抛出异常——这是显然的，Spring尝试帮我们进行绑定，然而没有成功。但有的时候，参数确实不一定永远都存在，这是我们可以通过定义required属性：
@@ -399,9 +403,6 @@ ApplicationContext是BeanFactory的子接口。创建ApplicationContext实例的
 @Component： 作用于类上，告知Spring，为这个类创建Bean。
 @Bean：主要作用于方法上，告知Spring，这个方法会返回一个对象，且要注册在Spring的上下文中。通常方法体中包含产生Bean的逻辑。 相当于 xml文件的中<bean>标签。
 
-
-# 39 controller接收请求参数的几种方法：Requestparemter  实体类  直接字符串。。。。
-https://blog.csdn.net/weixin_46141585/article/details/117391904
 
 # 40 修改和删除user
 html里
@@ -560,7 +561,7 @@ server.servlet.encoding.force=true
 -pravite属性 @Data
 ### 4 创建Dao接口及对应的增删改差方法
 -创建StudentDao类
--创建接口方法：Student selectById(@Param("xxx")  Integer id);
+-创建接口方法：Student selectById(@RequestParam  Integer id);
 -让项目识别mapper
 第一种方法
 在类名上加@Mapper告诉myubatis这是dao接口 在 Spring 程序中，Mybatis 需要找到对应的 mapper，在编译的时候动态生成代理类，让代理类去做链接数据库等那些冗余的脏活累活，实现数据库查询功能，所以我们需要在接口上添加 @Mapper 注解。
@@ -644,7 +645,23 @@ aspect框架
 -创建UserMapper类   
 -类上加@component：不加就无法在service这样用：private final UserMapper   
 -在service里引入：private final UserMapper
+-UserMapper里面写上usermapperToxxx  UserMapperToxxx这些方法，方法里面就是最笨的那种写法：xxx.setxx(user.get(xxx))
 ### Mapper插件
+-导入依赖：
+implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+-定义userMapper接口,里面规定方法名，传入值，转出值即可
+```java
+@Mapper(componentModel="spring")
+public interface UserMapper{
+    UserGetDto mapperUserToUserGetDto(User user);
+}
+```
+-转换过去后变量名不一样的解决办法：在方法上加：
+@Mapper(source = "xxx",target = "xxx")
+-转换过去后数据类型不一样的解决办法：在mapper后的uses属性中添加那个缺失的数据转换
+@Mapper(componentModel="spring"，uses="UserMapper.class")
+
 
 
 ### builder
@@ -723,3 +740,32 @@ class IndexControllerTest {
                 .andExpect(status().isOk());
     }
 ```
+
+
+# 57 @Entity @Table(name = "xx")
+@Entiry：这个类被映射为数据库中的同名表 默认为类名
+```java
+@Getter
+@Setter
+@Entity
+public class Property {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String typo;
+    private Integer size;
+
+    //这里你想直接显示owner id对应的哪个user 就得在代码里接着查一步 告诉代码依赖关系以及根据什么查
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User user;
+
+    @CreationTimestamp
+    private OffsetDateTime created_time;
+    @UpdateTimestamp
+    private OffsetDateTime updated_time;
+}
+```
+@Table：类名与表名不同时通过这个注解指定
+
+
