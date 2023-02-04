@@ -691,24 +691,30 @@ public interface UserMapper{
 1 类上加@ExtendWith(MockitoExtension.class)  
 2 用@mock引入测试此类中用到的额外的成员变量  
 3 用@InjectMocks注解引入你想测试的类 
-4 import static org.mockito.Mockito.*;  
+4 import static org.mockito.Mockito.*;  import static org.junit.jupiter.api.Assertions.assertEquals;
 5 测试方法
 其中写when 。。thenreturn中写的都是你要测的那个方法中用到的外部方法，这些方法在上面已经被mock过了，所以是假的，代码走到那儿的话不会执行，你要模拟执行一遍，返回假数据。那么为什么要把这些mock呢？直接用不就行了。原因是为了保证这个测试的纯粹。本测试不想测试这些依赖方法，就用mock的方式模拟返回数据
 
 ```java
-private final UserDTto mockUserDto = UserDto.builder().email("xxx").name("xxx").builde();
+ @Test
+    void getUser() {
+            User user = new User();
+            Long userId = 1L;
+            user.setId(userId);
+            user.setPassword("11111");
+            user.setName("cxc");
+            user.setEmail("943294932423");
 
-@Test
-void xxxTest(){
-    Long userId = 1L;
-    when(userMapper.mapUserDtoToUser(userdto)).thenReturn(user);
-    UserDto userdto = userservice.getUser(userId);
-    //有返回值用asserequals
-    asserEquals(userdto,mockUserDto)
-    //无返回值用verify
+            UserGetDto userGetDto = new UserGetDto();
+            userGetDto.setEmail("943294932423");
+            userGetDto.setName("cxc");
 
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            //注意这里是userRepository.findById(userId),不是service.findUser方法 因为@mock的是注意这里是userRepository
+            when(userMapper.mapperUserToUserGetDto(user)).thenReturn(userGetDto);
+            assertEquals(userService.getUser(userId),userGetDto);
 
-}
+            }
 ```
 
 ## mockMVC
