@@ -662,9 +662,17 @@ public interface UserMapper{
 -转换过去后数据类型不一样的解决办法：在mapper后的uses属性中添加那个缺失的数据转换
 @Mapper(componentModel="spring"，uses="UserMapper.class")
 
-
-
 ### builder
+在要转换的类上加@builder
+然后在转换类里写：
+```java
+ public PropertyGetDto mapperPropertyToPropertyGetDto(Property property){
+        User user = property.getUser();
+        UserGetDto userGetDto = userMapper.mapperUserToUserGetDto(user);
+        PropertyGetDto propertyGetDto = PropertyGetDto.builder().typo(property.getTypo()).userGetDto(userGetDto).size(property.getSize()).id(property.getId()).build();
+        return propertyGetDto;
+    }
+```
 
 
 # 55 为何能使用private final xxx代替@Resource
@@ -768,4 +776,46 @@ public class Property {
 ```
 @Table：类名与表名不同时通过这个注解指定
 
+# 58 状态码
+## 删除
+@ResponseStatus(HttpStatus.NO_CONTENT)
+## post
+@ResponseStatus(HttpStatus.CREATE)
+## 其他的暂时没看到
 
+# 59 联表查询两种方式、
+## 推荐方式二 更加oop 且所有方法都在自己service里 不需要跨类调动 更加结偶
+## 方式一 调用对应的service层查询
+比如要通过userid查对应的property。在usercontroller调用propertyservice的findPropertubyUseriid方法
+```java
+public List<PropertyGetDto> findPropertyByUserId(Long userId){
+        List<Property> byUser_id = propertyRepository.findByUser_id(userId);
+        List<PropertyGetDto> propertyGetDtos = byUser_id.stream().map((property) -> {
+            return propertyMapper.mapperPropertyToPropertyGetDto(property);
+        }).toList();
+        return propertyGetDtos;
+    }
+```
+## 方式二 在entity表中就一步到位让它自动查好给你放那儿即@ManytoOne
+user entity中
+```java
+    @OneToMany(mappedBy = "user")
+    private List<Property> propertyList;
+```
+property entity中
+```java
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User user;
+```
+userService方法
+```java
+public List<PropertyGetDto> findPropertyByUserId(Long userId){
+        User user = findUser(userId);
+        List<Property> byUser_id = user.getPropertyList();
+        List<PropertyGetDto> propertyGetDtos = byUser_id.stream().map((property) -> {
+            return propertyMapper.mapperPropertyToPropertyGetDto(property);
+        }).toList();
+        return propertyGetDtos;
+    }
+```
