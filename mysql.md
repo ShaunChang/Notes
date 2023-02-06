@@ -19,8 +19,6 @@
 
 ## DBMS SQl DB三者之间的关系？
 	DBMS--执行--> SQL --操作--> DB
-	
-
 
 
 # 2、安装MySQL数据库管理系统。
@@ -36,15 +34,15 @@
 	默认是：MySQL.不用改。
 		
 ### 选择配置环境变量path：
-			如果没有选择怎么办？你可以手动配置
-			path=其它路径;C:\Program Files (x86)\MySQL\MySQL Server 5.5\bin
+	如果没有选择怎么办？你可以手动配置
+	path=其它路径;C:\Program Files (x86)\MySQL\MySQL Server 5.5\bin
 		
 ### mysql超级管理员用户名不能改，一定是：root
-		你需要设置mysql数据库超级管理员的密码。
-		我们设置为123456
-		设置密码的同时，可以激活root账户远程访问。
-		激活：表示root账号可以在外地登录。
-		不激活：表示root账号只能在本机上使用。
+	你需要设置mysql数据库超级管理员的密码。
+	我们设置为123456
+	设置密码的同时，可以激活root账户远程访问。
+	激活：表示root账号可以在外地登录。
+	不激活：表示root账号只能在本机上使用。
 	
 
 # 3、MySQL数据库的完美卸载！
@@ -73,27 +71,27 @@
 ## 退出mysql ：
     exit
 
-## 查看mysql中有哪些数据库
-    -show databases; 注意：以分号结尾。mysql默认自带了4个数据库。
+## 查看mysql中有哪些数据库.
+    -show databases;  
 
 ## 怎么选择使用某个数据库呢？
-    use test;
+    use xxx;
 
 ## 怎么创建数据库呢？
-create database bjpowernode;
+    create database xxx;
 
 ## 查看某个数据库下有哪些表？
-show tables;
+    show tables;
 
 ## 查看mysql数据库的版本号：
-mysql>select version();
+    select version();
 
 ## 查看当前使用的是哪个数据库？
-select database();
+    select database();
 
 ## 如何建表
-create table 表名（字段名 字段类型（定义size）deafult '默认值'，字段名 字段类型）；
-eg: create table t_student(
+    create table 表名（字段名 字段类型（定义size）deafult '默认值'，字段名 字段类型）；
+    eg: create table t_student(
 		no int,
 		name varchar(32),
 		sex char(1) default 'm',
@@ -102,914 +100,177 @@ eg: create table t_student(
 	);
 
 ## 如何插入数据insert （DML）
--insert into 表名(字段名1,字段名2,字段名3...) values(值1,值2,值3);
-eg：insert into t_student(no,name,sex,age,email) values(1,'zhangsan','m',20,'zhangsan@123.com');
-eg：insert into t_student(email,name,sex,age,no) values('lisi@123.com','lisi','f',20,2);  
--注意：字段名和值要一一对应。即数量要对应。数据类型要对应。  
--注意：insert语句但凡是执行成功了，那么必然会多一条记录。没有给其它字段指定值的话，默认值是NULL  
--注意：insert语句中的“字段名”可以省略
-		insert into t_student values(2); //错误的  
--注意：前面的字段名省略的话，等于都写上了！所以值也要都写上！
+    insert into 表名(字段名1,字段名2,字段名3...) values(值1,值2,值3);
+    eg1：insert into t_student(no,name,sex,age,email) values(1,'zhangsan','m',20,'zhangsan@123.com');
+    eg2：insert into t_student(email,name,sex,age,no) values('lisi@123.com','lisi','f',20,2);  
+    -注意：字段名和值要一一对应。即数量要对应。数据类型要对应。  
+    -注意：insert语句但凡是执行成功了，那么必然会多一条记录。没有给其它字段指定值的话，默认值是NULL  
+    -注意：insert语句中的“字段名”可以省略   insert into t_student values(2); //错误的  
+    -注意：前面的字段名省略的话，等于都写上了！所以值也要都写上！
 		insert into t_student values(2, 'lisi', 'f', 20, 'lisi@123.com');
 
 
 ## insert插入日期
 ### 格式化数字：format(数字, '格式')
-eg：select ename,format(sal, '$999,999') as sal from emp;  
--str_to_date：将字符串varchar类型转换成date类型 mysql的日期格式：
-%Y	年
-   %m 月
- 	%d 日
-	%h	时
-	%i	分  
-%s	秒
-eg：类型不匹配。数据库birth是date类型，这里给了一个字符串varchar。
-insert into t_user(id,name,birth) values(1, 'zhangsan', '01-10-1990'); // 1990年10月1日
-应该是：
-insert into t_user(id,name,birth) values(1, 'zhangsan', str_to_date('01-10-1990','%d-%m-%Y'));  
--date_format(日期类型数据, '日期格式')：将date类型转换成具有一定格式的varchar字符串类型  
-create table t_user(
-id int,
-name varchar(32),
-birth date // 生日也可以使用date日期类型
-);  
-create table t_user(
-id int,
-name varchar(32),
-birth char(10) // 生日可以使用字符串，没问题);  
+    select ename,format(sal, '$999,999') as sal from emp;  
+### 将字符串varchar类型转换成date类型 mysql的日期格式：str_to_date：
+    %Y年 %m月 %d 日%h	时%i 分%s	秒
+    eg：类型不匹配。数据库birth是date类型，这里给了一个字符串varchar。
+    insert into t_user(id,name,birth) values(1, 'zhangsan', '01-10-1990'); // 1990年10月1日
+    应该是：
+    insert into t_user(id,name,birth) values(1, 'zhangsan', str_to_date('01-10-1990','%d-%m-%Y'));  
+### date_format(日期类型数据, '日期格式')：将date类型转换成具有一定格式的varchar字符串类型  
+    create table t_user(id int,name varchar(32),birth date // 生日也可以使用date日期类型);  
+    create table t_user(id int,name varchar(32),birth char(10) // 生日可以使用字符串，没问题);  
 ### 查询的时候以某个特定的日期格式展示
-select id,name,date_format(birth, '%m/%d/%Y') as birth from t_user;  
+    select id,name,date_format(birth, '%m/%d/%Y') as birth from t_user;  
 
 ## 怎么查看表中的数据呢
-select * from 表名;
-eg: select * from emp; // 从emp表查询所有数据。
+    select * from 表名; 
 
 ## 不看表中的数据，只看表的结构，有一个命令：
-desc 表名;
-eg: mysql> desc dept;
+    desc 表名;
 
 ## 如何查询一个字段
-select 字段名 from 表名;
-eg: select dname from dept;
+    select 字段名 from 表名;
 
 ## 查询两个字段，或者多个字段怎么办
-使用逗号隔开“,”
-eg:查询部门编号和部门名：select deptno,dname from dept
+    使用逗号隔开 :select deptno,dname from dept
 
 ## 如何给查询的列起别名
-select deptno,dname as deptname from dept;
-注意：只是将显示的查询结果列名显示为deptname，原表列名还是叫：dname  
-as关键字可以省略：select deptno,dname deptname from dept;
+    select deptno,dname as deptname from dept;
+    注意：只是将显示的查询结果列名显示为deptname，原表列名还是叫：dname .as关键字可以省略：select deptno,dname deptname from dept;
 ### 假设起别名的时候，别名里面有空格，怎么办？
-select deptno,dname 'dept name' from dept; //加单引号  
-select deptno,dname "dept name" from dept; //加双引号  
-注意：在所有的数据库当中，字符串统一使用单引号括起来，
-单引号是标准，双引号在oracle数据库中用不了。但是在mysql
-中可以使用。
-再次强调：数据库中的字符串都是采用单引号括起来。这是标准的。
-双引号不标准。
+    select deptno,dname 'dept name' from dept; //加单引号  
+    select deptno,dname "dept name" from dept; //加双引号  
+    注意：在所有的数据库当中，字符串统一使用单引号括起来，单引号是标准，双引号在oracle数据库中用不了。但是在mysql中可以使用。再次强调：数据库中的字符串都是采用单引号括起来。这是标准的。双引号不标准。
 
-## 计算员工年薪？sal * 12 
-select ename,sal*12 from emp; // 结论：字段可以使用数学表达式！  
-select ename,sal*12 as yearsal from emp; //起别名  
-select ename,sal*12 as '年薪' from emp; //别名是中文，用单引号括起来。
 
 ## 如何进行条件查询
-select
- 字段1,字段2,字段3....
- from 
-表名 where
- 条件;
+    select 字段1,字段2,字段3....from 表名 where 条件;
 ### 都有哪些条件
-= 等于  
-查询薪资等于800的员工姓名和编号？  
-select empno,ename from emp where sal = 800;  
-select empno,sal from emp where ename = 'SMITH'; //字符串使用单引号
+    = 等于  
+    查询薪资等于800的员工姓名和编号？  
+    select empno,ename from emp where sal = 800;  
+    select empno,sal from emp where ename = 'SMITH'; //字符串使用单引号
 
-<>或!= 不等于  
-查询薪资不等于800的员工姓名和编号？  
-select empno,ename from emp where sal != 800;  
-select empno,ename from emp where sal <> 800; // 小于号和大于号组成的不等号
+    <>或!= 不等于  
+    查询薪资不等于800的员工姓名和编号？  
+    select empno,ename from emp where sal != 800;  
+    select empno,ename from emp where sal <> 800; // 小于号和大于号组成的不等号
 
-< 小于  
-查询薪资小于2000的员工姓名和编号？  
-mysql> select empno,ename,sal from emp where sal < 2000;
+    < 小于  
+    查询薪资小于2000的员工姓名和编号？  
+    mysql> select empno,ename,sal from emp where sal < 2000;
 
-<= 小于等于  
-查询薪资小于等于3000的员工姓名和编号？  
-select empno,ename,sal from emp where sal <= 3000;
+    <= 小于等于  
+    查询薪资小于等于3000的员工姓名和编号？  
+    select empno,ename,sal from emp where sal <= 3000;
 
 ## between … and …. 两个值之间, 等同于 >= and <=
- ： 查询薪资在2450和3000之间的员工信息？包括2450和3000  
-第一种方式：>= and <= （and是并且的意思。）
-		select empno,ename,sal from emp where sal >= 2450 and sal <= 3000;  
-第二种方式：between … and …
-			select 
-empno,ename,sal 
-from 
-emp 
-where 
-sal between 2450 and 3000;  
-注意：  
-1 使用between and的时候，必须遵循左小右大。  
-2 between and是闭区间，包括两端的值。
+    查询薪资在2450和3000之间的员工信息？包括2450和3000  
+    第一种方式：>= and <= （and是并且的意思。）
+        select empno,ename,sal from emp where sal >= 2450 and sal <= 3000;  
+    第二种方式：between … and …
+          select 
+    empno,ename,sal 
+    from 
+    emp   
+    where 
+    sal between 2450 and 3000;  
+    注意：  
+    1 使用between and的时候，必须遵循左小右大。  
+    2 between and是闭区间，包括两端的值。
 
 ## 如何查询不为空-null的？
-在数据库当中null不能使用等号进行衡量。需要使用is null。因为数据库中的null代表什么也没有，它不是一个值，所以不能使用等号衡量。
+    在数据库当中null不能使用等号进行衡量。需要使用is null。因为数据库中的null代表什么也没有，它不是一个值，所以不能使用等号衡量。
 
 ## like：模糊查询，支持%或下划线匹配 %匹配任意多个字符 下划线：任意一个字符。
 
 ### 找出名字中含有O的？
-		mysql> select ename from emp where ename like '%O%';
-		+-------+
-		| ename |
-		+-------+
-		| JONES |
-		| SCOTT |
-		| FORD  |
-		+-------+
+    mysql> select ename from emp where ename like '%O%';
 
 ### 找出名字以T结尾的？
     select ename from emp where ename like '%T';
 			
 ### 找出名字以K开始的？
-			select ename from emp where ename like 'K%';
+    select ename from emp where ename like 'K%';
 
 ### 找出第二个字每是A的？
-			select ename from emp where ename like '_A%';
+    select ename from emp where ename like '_A%';
 		
 ### 找出第三个字母是R的？
-			select ename from emp where ename like '__R%';
+    select ename from emp where ename like '__R%';
 
 ### 找出名字中有“_”的？
-			select name from t_student where name like '%_%'; //这样不行
-			mysql> select name from t_student where name like '%\_%'; // \转义字符。
-			+----------+
-			| name     |
-			+----------+
-			| jack_son |
-			+----------+
+    select name from t_student where name like '%_%'; //这样不行
+	  select name from t_student where name like '%\_%'; // \转义字符。
+
+## 排序
+
+### 默认升序
+    select ename,sal from emp order by sal; // 默认是升序！！！
+
+### 指定升序？
+    select ename,sal from emp order by sal asc;
+
+### 降序？
+    select ename,sal from emp order by sal desc;
+	
+### 多个字段排序
+	查询员工名字和薪资，要求按照薪资升序，如果薪资一样的话，再按照名字升序排列。
+	select ename,sal from emp order by sal asc, ename asc; // sal在前，起主导，只有sal相等的时候，才会考虑启用ename排序。
+
+### 根据字段的位置也可以排序
+	select ename,sal from emp order by 2; // 2表示第二列。第二列是sal
+	按照查询结果的第2列sal排序。
+	了解一下，不建议在开发中这样写，因为不健壮。
+	因为列的顺序很容易发生改变，列顺序修改之后，2就废了。
 
 
 # sql练习题
 
+## 计算员工年薪？sal * 12 
+    select ename,sal*12 from emp; // 结论：字段可以使用数学表达式！  
+    select ename,sal*12 as yearsal from emp; //起别名  
+    select ename,sal*12 as '年薪' from emp; //别名是中文，用单引号括起来。
+
 ## 查询工作岗位是MANAGER并且工资大于2500的员工信息？
-eg: select 
-empno,ename,job,sal from 
-emp 
-where 
-job = 'MANAGER' and sal > 2500;
+    select empno,ename,job,sal from emp where job = 'MANAGER' and sal > 2500;
 		
 ## 查询工作岗位是MANAGER和SALESMAN的员工？
-eg: select 
-empno,ename,job
- from
- emp
- where 	job = 'MANAGER' or job = 'SALESMAN';
-and和or同时出现的话，有优先级问题吗？
+    select empno,ename,job from emp  where 	job = 'MANAGER' or job = 'SALESMAN';
 
 ## 找出工资大于2500并且部门编号为10的员工，或者20部门所有员工找出来
-select 
-*
- from
- emp
- where
- sal > 2500 and deptno = 10 or deptno = 20;
-and优先级比or高。
-以上语句会先执行and，然后执行or。
+    select * from emp where sal > 2500 and deptno = 10 or deptno = 20;
+    注意：and优先级比or高。以上语句会先执行and，然后执行or。
 
 ## 查询工资大于2500，并且部门编号为10或20部门的员工？
-select 
-*
- from emp
- where
- sal > 2500 and (deptno = 10 or deptno = 20);
-and和or同时出现，and优先级较高。如果想让or先执行，需要加“小括号”
- 以后在开发中，如果不确定优先级，就加小括号就行了。
+    select * from emp where sal > 2500 and (deptno = 10 or deptno = 20);
+    注意：and和or同时出现，and优先级较高。如果想让or先执行，需要加“小括号”以后在开发中，如果不确定优先级，就加小括号就行了。
 
-in 包含，相当于多个 or （not in 不在这个范围中）
+## in 包含，相当于多个 or （not in 不在这个范围中）
 
 ## 查询工作岗位是MANAGER和SALESMAN的员工？
-eg：select empno,ename,job from emp where job = 'MANAGER' or job = 'SALESMAN';------->
+    select empno,ename,job from emp where job = 'MANAGER' or job = 'SALESMAN';------->
 	  select empno,ename,job from emp where job in('MANAGER', 'SALESMAN');
+    注意：in不是一个区间。in后面跟的是具体的值。not in 表示不在这几个值当中的数据。
+    select ename,sal from emp where sal not in(800, 5000, 3000);  
+    not 可以取非，主要用在 is 或 in 中  
+    is null
+    is not null
+    in
+    not in
 
--注意：in不是一个区间。in后面跟的是具体的值。not in 表示不在这几个值当中的数据。
-select ename,sal from emp where sal not in(800, 5000, 3000);  
-not 可以取非，主要用在 is 或 in 中
-		is null
-		is not null
-		in
-		not in
-
-
-
-15、排序
-
-15.1、查询所有员工薪资，排序？
-	select 
-		ename,sal
-	from
-		emp
-	order by
-		sal; // 默认是升序！！！
-
-	+--------+---------+
-	| ename  | sal     |
-	+--------+---------+
-	| SMITH  |  800.00 |
-	| JAMES  |  950.00 |
-	| ADAMS  | 1100.00 |
-	| WARD   | 1250.00 |
-	| MARTIN | 1250.00 |
-	| MILLER | 1300.00 |
-	| TURNER | 1500.00 |
-	| ALLEN  | 1600.00 |
-	| CLARK  | 2450.00 |
-	| BLAKE  | 2850.00 |
-	| JONES  | 2975.00 |
-	| FORD   | 3000.00 |
-	| SCOTT  | 3000.00 |
-	| KING   | 5000.00 |
-	+--------+---------+
-
-15.2、怎么降序？
-
-	指定降序：
-	select 
-		ename,sal
-	from
-		emp
-	order by
-		sal desc;
-
-+--------+---------+
-| ename  | sal     |
-+--------+---------+
-| KING   | 5000.00 |
-| SCOTT  | 3000.00 |
-| FORD   | 3000.00 |
-| JONES  | 2975.00 |
-| BLAKE  | 2850.00 |
-| CLARK  | 2450.00 |
-| ALLEN  | 1600.00 |
-| TURNER | 1500.00 |
-| MILLER | 1300.00 |
-| MARTIN | 1250.00 |
-| WARD   | 1250.00 |
-| ADAMS  | 1100.00 |
-| JAMES  |  950.00 |
-| SMITH  |  800.00 |
-+--------+---------+
-
-	指定升序？
-	select 
-		ename,sal
-	from
-		emp
-	order by
-		sal asc;
-
-+--------+---------+
-| ename  | sal     |
-+--------+---------+
-| SMITH  |  800.00 |
-| JAMES  |  950.00 |
-| ADAMS  | 1100.00 |
-| WARD   | 1250.00 |
-| MARTIN | 1250.00 |
-| MILLER | 1300.00 |
-| TURNER | 1500.00 |
-| ALLEN  | 1600.00 |
-| CLARK  | 2450.00 |
-| BLAKE  | 2850.00 |
-| JONES  | 2975.00 |
-| FORD   | 3000.00 |
-| SCOTT  | 3000.00 |
-| KING   | 5000.00 |
-+--------+---------+
-
-15.3、可以两个字段排序吗？或者说按照多个字段排序？
-	查询员工名字和薪资，要求按照薪资升序，如果薪资一样的话，
-	再按照名字升序排列。
-	select 
-		ename,sal
-	from
-		emp
-	order by
-		sal asc, ename asc; // sal在前，起主导，只有sal相等的时候，才会考虑启用ename排序。
-
-	+--------+---------+
-	| ename  | sal     |
-	+--------+---------+
-	| SMITH  |  800.00 |
-	| JAMES  |  950.00 |
-	| ADAMS  | 1100.00 |
-	| MARTIN | 1250.00 |
-	| WARD   | 1250.00 |
-	| MILLER | 1300.00 |
-	| TURNER | 1500.00 |
-	| ALLEN  | 1600.00 |
-	| CLARK  | 2450.00 |
-	| BLAKE  | 2850.00 |
-	| JONES  | 2975.00 |
-	| FORD   | 3000.00 |
-	| SCOTT  | 3000.00 |
-	| KING   | 5000.00 |
-	+--------+---------+
-
-15.4、了解：根据字段的位置也可以排序
-	select ename,sal from emp order by 2; // 2表示第二列。第二列是sal
-	按照查询结果的第2列sal排序。
-
-	了解一下，不建议在开发中这样写，因为不健壮。
-	因为列的顺序很容易发生改变，列顺序修改之后，2就废了。
-
-16、综合一点的案例：
+## 综合一点的案例：
 	找出工资在1250到3000之间的员工信息，要求按照薪资降序排列。
-	select 
-		ename,sal
-	from
-		emp
-	where
-		sal between 1250 and 3000
-	order by
-		sal desc;
-
-+--------+---------+
-| ename  | sal     |
-+--------+---------+
-| FORD   | 3000.00 |
-| SCOTT  | 3000.00 |
-| JONES  | 2975.00 |
-| BLAKE  | 2850.00 |
-| CLARK  | 2450.00 |
-| ALLEN  | 1600.00 |
-| TURNER | 1500.00 |
-| MILLER | 1300.00 |
-| MARTIN | 1250.00 |
-| WARD   | 1250.00 |
-+--------+---------+
-	
-	关键字顺序不能变：
-		select
-			...
-		from
-			...
-		where
-			...
-		order by
-			...
-		
-		以上语句的执行顺序必须掌握：
-			第一步：from
-			第二步：where
-			第三步：select
-			第四步：order by（排序总是在最后执行！）
-
-17、数据处理函数
-
-17.1、数据处理函数又被称为单行处理函数
-
-	单行处理函数的特点：一个输入对应一个输出。
-
-	和单行处理函数相对的是：多行处理函数。（多行处理函数特点：多个输入，对应1个输出！）
-
-17.2、单行处理函数常见的有哪些？（特点：函数名加小括号）
-
-	lower 转换小写
-		mysql> select lower(ename) as ename from emp;
-		+--------+
-		| ename  |
-		+--------+
-		| smith  |
-		| allen  |
-		| ward   |
-		| jones  |
-		| martin |
-		| blake  |
-		| clark  |
-		| scott  |
-		| king   |
-		| turner |
-		| adams  |
-		| james  |
-		| ford   |
-		| miller |
-		+--------+
-		14个输入，最后还是14个输出。这是单行处理函数的特点。
-
-	upper 转换大写
-		mysql> select * from t_student;
-		+----------+
-		| name     |
-		+----------+
-		| zhangsan |
-		| lisi     |
-		| wangwu   |
-		| jack_son |
-		+----------+
-
-		mysql> select upper(name) as name from t_student;
-		+----------+
-		| name     |
-		+----------+
-		| ZHANGSAN |
-		| LISI     |
-		| WANGWU   |
-		| JACK_SON |
-		+----------+
-
-	substr 取子串（substr( 被截取的字符串, 起始下标,截取的长度)）
-		select substr(ename, 1, 1) as ename from emp;
-		注意：起始下标从1开始，没有0.
-		找出员工名字第一个字母是A的员工信息？
-			第一种方式：模糊查询
-				select ename from emp where ename like 'A%';
-			第二种方式：substr函数
-				select 
-					ename 
-				from 
-					emp 
-				where 
-					substr(ename,1,1) = 'A';
-
-		首字母大写？
-			select name from t_student;
-			select upper(substr(name,1,1)) from t_student;
-			select substr(name,2,length(name) - 1) from t_student;
-			select concat(upper(substr(name,1,1)),substr(name,2,length(name) - 1)) as result from t_student;
-			+----------+
-			| result   |
-			+----------+
-			| Zhangsan |
-			| Lisi     |
-			| Wangwu   |
-			| Jack_son |
-			+----------+
-		
-	concat函数进行字符串的拼接
-		select concat(empno,ename) from emp;
-		+---------------------+
-		| concat(empno,ename) |
-		+---------------------+
-		| 7369SMITH           |
-		| 7499ALLEN           |
-		| 7521WARD            |
-		| 7566JONES           |
-		| 7654MARTIN          |
-		| 7698BLAKE           |
-		| 7782CLARK           |
-		| 7788SCOTT           |
-		| 7839KING            |
-		| 7844TURNER          |
-		| 7876ADAMS           |
-		| 7900JAMES           |
-		| 7902FORD            |
-		| 7934MILLER          |
-		+---------------------+
-
-	length 取长度
-		select length(ename) enamelength from emp;
-		+-------------+
-		| enamelength |
-		+-------------+
-		|           5 |
-		|           5 |
-		|           4 |
-		|           5 |
-		|           6 |
-		|           5 |
-		|           5 |
-		|           5 |
-		|           4 |
-		|           6 |
-		|           5 |
-		|           5 |
-		|           4 |
-		|           6 |
-		+-------------+
-
-	trim 去空格
-		mysql> select * from emp where ename = '  KING';
-		Empty set (0.00 sec)
-
-		mysql> select * from emp where ename = trim('   KING');
-		+-------+-------+-----------+------+------------+---------+------+--------+
-		| EMPNO | ENAME | JOB       | MGR  | HIREDATE   | SAL     | COMM | DEPTNO |
-		+-------+-------+-----------+------+------------+---------+------+--------+
-		|  7839 | KING  | PRESIDENT | NULL | 1981-11-17 | 5000.00 | NULL |     10 |
-		+-------+-------+-----------+------+------------+---------+------+--------+
-
-	str_to_date 将字符串转换成日期
-	date_format 格式化日期
-	format 设置千分位
-
-	case..when..then..when..then..else..end
-		当员工的工作岗位是MANAGER的时候，工资上调10%，当工作岗位是SALESMAN的时候，工资上调50%,其它正常。
-		（注意：不修改数据库，只是将查询结果显示为工资上调）
-		select 
-			ename,
-			job, 
-			sal as oldsal,
-			(case job when 'MANAGER' then sal*1.1 when 'SALESMAN' then sal*1.5 else sal end) as newsal 
-		from 
-			emp;
-		
-		+--------+-----------+---------+---------+
-		| ename  | job       | oldsal  | newsal  |
-		+--------+-----------+---------+---------+
-		| SMITH  | CLERK     |  800.00 |  800.00 |
-		| ALLEN  | SALESMAN  | 1600.00 | 2400.00 |
-		| WARD   | SALESMAN  | 1250.00 | 1875.00 |
-		| JONES  | MANAGER   | 2975.00 | 3272.50 |
-		| MARTIN | SALESMAN  | 1250.00 | 1875.00 |
-		| BLAKE  | MANAGER   | 2850.00 | 3135.00 |
-		| CLARK  | MANAGER   | 2450.00 | 2695.00 |
-		| SCOTT  | ANALYST   | 3000.00 | 3000.00 |
-		| KING   | PRESIDENT | 5000.00 | 5000.00 |
-		| TURNER | SALESMAN  | 1500.00 | 2250.00 |
-		| ADAMS  | CLERK     | 1100.00 | 1100.00 |
-		| JAMES  | CLERK     |  950.00 |  950.00 |
-		| FORD   | ANALYST   | 3000.00 | 3000.00 |
-		| MILLER | CLERK     | 1300.00 | 1300.00 |
-		+--------+-----------+---------+---------+
-
-	        round 四舍五入
-		select 字段 from 表名;
-		select ename from emp;
-		select 'abc' from emp; // select后面直接跟“字面量/字面值” 会根据表结构生成相应的量 例如下面的名字字段中有14个值  这样输入会生成14个值
-
-
-		mysql> select 'abc' as bieming from emp;
-		+---------+
-		| bieming |
-		+---------+
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		| abc     |
-		+---------+
-
-		mysql> select abc from emp;
-		ERROR 1054 (42S22): Unknown column 'abc' in 'field list'
-		这样肯定报错，因为会把abc当做一个字段的名字，去emp表中找abc字段去了。
-
-		select 1000 as num from emp; // 1000 也是被当做一个字面量/字面值。
-		+------+
-		| num  |
-		+------+
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		| 1000 |
-		+------+
-
-		结论：select后面可以跟某个表的字段名（可以等同看做变量名），也可以跟字面量/字面值（数据）。
-		select 21000 as num from dept;
-		+-------+
-		| num   |
-		+-------+
-		| 21000 |
-		| 21000 |
-		| 21000 |
-		| 21000 |
-		+-------+
-
-		mysql> select round(1236.567, 0) as result from emp; //保留整数位。
-		+--------+
-		| result |
-		+--------+
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		|   1237 |
-		+--------+
-
-		select round(1236.567, 1) as result from emp; //保留1个小数
-		select round(1236.567, 2) as result from emp; //保留2个小数
-		select round(1236.567, -1) as result from emp; // 保留到十位。
-		+--------+
-		| result |
-		+--------+
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		|   1240 |
-		+--------+
-
-		select round(1236.567, -2) as result from emp;
-		+--------+
-		| result |
-		+--------+
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		|   1200 |
-		+--------+
-
-	rand() 生成随机数
-		mysql> select round(rand()*100,0) from emp; // 100以内的随机数
-		+---------------------+
-		| round(rand()*100,0) |
-		+---------------------+
-		|                  76 |
-		|                  29 |
-		|                  15 |
-		|                  88 |
-		|                  95 |
-		|                   9 |
-		|                  63 |
-		|                  89 |
-		|                  54 |
-		|                   3 |
-		|                  54 |
-		|                  61 |
-		|                  42 |
-		|                  28 |
-		+---------------------+
-		
-	ifnull 可以将 null 转换成一个具体值
-		ifnull是空处理函数。专门处理空的。
-		在所有数据库当中，只要有NULL参与的数学运算，最终结果就是NULL。
-		mysql> select ename, sal + comm as salcomm from emp;
-		+--------+---------+
-		| ename  | salcomm |
-		+--------+---------+
-		| SMITH  |    NULL |
-		| ALLEN  | 1900.00 |
-		| WARD   | 1750.00 |
-		| JONES  |    NULL |
-		| MARTIN | 2650.00 |
-		| BLAKE  |    NULL |
-		| CLARK  |    NULL |
-		| SCOTT  |    NULL |
-		| KING   |    NULL |
-		| TURNER | 1500.00 |
-		| ADAMS  |    NULL |
-		| JAMES  |    NULL |
-		| FORD   |    NULL |
-		| MILLER |    NULL |
-		+--------+---------+
-
-		计算每个员工的年薪？
-			年薪 = (月薪 + 月补助) * 12
-			
-			select ename, (sal + comm) * 12 as yearsal from emp;
-			+--------+----------+
-			| ename  | yearsal  |
-			+--------+----------+
-			| SMITH  |     NULL |
-			| ALLEN  | 22800.00 |
-			| WARD   | 21000.00 |
-			| JONES  |     NULL |
-			| MARTIN | 31800.00 |
-			| BLAKE  |     NULL |
-			| CLARK  |     NULL |
-			| SCOTT  |     NULL |
-			| KING   |     NULL |
-			| TURNER | 18000.00 |
-			| ADAMS  |     NULL |
-			| JAMES  |     NULL |
-			| FORD   |     NULL |
-			| MILLER |     NULL |
-			+--------+----------+
-
-			注意：NULL只要参与运算，最终结果一定是NULL。为了避免这个现象，需要使用ifnull函数。
-			ifnull函数用法：ifnull(数据, 被当做哪个值)
-				如果“数据”为NULL的时候，把这个数据结构当做哪个值。
-			
-			补助为NULL的时候，将补助当做0
-				select ename, (sal + ifnull(comm, 0)) * 12 as yearsal from emp;
-				+--------+----------+
-				| ename  | yearsal  |
-				+--------+----------+
-				| SMITH  |  9600.00 |
-				| ALLEN  | 22800.00 |
-				| WARD   | 21000.00 |
-				| JONES  | 35700.00 |
-				| MARTIN | 31800.00 |
-				| BLAKE  | 34200.00 |
-				| CLARK  | 29400.00 |
-				| SCOTT  | 36000.00 |
-				| KING   | 60000.00 |
-				| TURNER | 18000.00 |
-				| ADAMS  | 13200.00 |
-				| JAMES  | 11400.00 |
-				| FORD   | 36000.00 |
-				| MILLER | 15600.00 |
-				+--------+----------+
-
-18、分组函数（多行处理函数）
-	
-	多行处理函数的特点：输入多行，最终输出一行。
-
-	5个：
-		count	计数
-		sum	求和
-		avg	平均值
-		max	最大值
-		min	最小值
-	
-	注意：
-		分组函数在使用的时候必须先进行分组，然后才能用。
-		如果你没有对数据进行分组，整张表默认为一组。
-	
-	找出最高工资？
-		mysql> select max(sal) from emp;
-		+----------+
-		| max(sal) |
-		+----------+
-		|  5000.00 |
-		+----------+
-	
-	找出最低工资？
-		mysql> select min(sal) from emp;
-		+----------+
-		| min(sal) |
-		+----------+
-		|   800.00 |
-		+----------+
-	
-	计算工资和：
-		mysql> select sum(sal) from emp;
-		+----------+
-		| sum(sal) |
-		+----------+
-		| 29025.00 |
-		+----------+
-	
-	计算平均工资：
-		mysql> select avg(sal) from emp;
-		+-------------+
-		| avg(sal)    |
-		+-------------+
-		| 2073.214286 |
-		+-------------+
-		14个工资全部加起来，然后除以14。
-	
-	计算员工数量？
-		mysql> select count(ename) from emp;
-		+--------------+
-		| count(ename) |
-		+--------------+
-		|           14 |
-		+--------------+
-	
-	分组函数在使用的时候需要注意哪些？
-
-		第一点：分组函数自动忽略NULL，你不需要提前对NULL进行处理。
-		mysql> select sum(comm) from emp;
-		+-----------+
-		| sum(comm) |
-		+-----------+
-		|   2200.00 |
-		+-----------+
-		
-		mysql> select count(comm) from emp;
-		+-------------+
-		| count(comm) |
-		+-------------+
-		|           4 |
-		+-------------+
-		mysql> select avg(comm) from emp;
-		+------------+
-		| avg(comm)  |
-		+------------+
-		| 550.000000 |
-		+------------+
-
-		第二点：分组函数中count(*)和count(具体字段)有什么区别？
-			mysql> select count(*) from emp;
-			+----------+
-			| count(*) |
-			+----------+
-			|       14 |
-			+----------+
-
-			mysql> select count(comm) from emp;
-			+-------------+
-			| count(comm) |
-			+-------------+
-			|           4 |
-			+-------------+
-
-			count(具体字段)：表示统计该字段下所有不为NULL的元素的总数。
-			count(*)：统计表当中的总行数。（只要有一行数据count则++）
-						因为每一行记录不可能都为NULL，一行数据中有一列不为NULL，则这行数据就是有效的。
-		
-		第三点：分组函数不能够直接使用在where子句中。
-			找出比最低工资高的员工信息。
-				select ename,sal from emp where sal > min(sal);
-				表面上没问题，运行一下？
-					ERROR 1111 (HY000): Invalid use of group function
-		?????????????????????????????????????????????????????????????????????
-			说完分组查询(group by)之后就明白了了。
-
-		第四点：所有的分组函数可以组合起来一起用。
-			select sum(sal),min(sal),max(sal),avg(sal),count(*) from emp;
-			+----------+----------+----------+-------------+----------+
-			| sum(sal) | min(sal) | max(sal) | avg(sal)    | count(*) |
-			+----------+----------+----------+-------------+----------+
-			| 29025.00 |   800.00 |  5000.00 | 2073.214286 |       14 |
-			+----------+----------+----------+-------------+----------+
-
-19、分组查询（非常重要：五颗星*****）
-	
-	19.1、什么是分组查询？
-		在实际的应用中，可能有这样的需求，需要先进行分组，然后对每一组的数据进行操作。
-		这个时候我们需要使用分组查询，怎么进行分组查询呢？
-			select
-				...
-			from
-				...
-			group by
-				...
-			
-			计算每个部门的工资和？
-			计算每个工作岗位的平均薪资？
-			找出每个工作岗位的最高薪资？
-			....
-	
-	19.2、将之前的关键字全部组合在一起，来看一下他们的执行顺序？
-		select
-			...
-		from
-			...
-		where
-			...
-		group by
-			...
-		order by
-			...
-		
-		以上关键字的顺序不能颠倒，需要记忆。
-		执行顺序是什么？
-			1. from
-			2. where
-			3. group by
-			4. select
-			5. order by
-		
-		为什么分组函数不能直接使用在where后面？
-			select ename,sal from emp where sal > min(sal);//报错。
-			因为分组函数在使用的时候必须先分组之后才能使用。
-			where执行的时候，还没有分组。所以where后面不能出现分组函数。
-
-			select sum(sal) from emp; 
-			这个没有分组，为啥sum()函数可以用呢？
-				因为select在group by之后执行。
-			
-	19.3、找出每个工作岗位的工资和？
+	select ename,sal from emp where sal between 1250 and 3000 order by sal desc;
+	关键字顺序不能变，必须掌握：
+	  第一步：from
+		第二步：where
+		第三步：select
+		第四步：order by（排序总是在最后执行！）
+## 找出每个工作岗位的工资和？
 	
 		实现思路：按照工作岗位分组，然后对工资求和。
 			select 
@@ -1052,7 +313,7 @@ not 可以取非，主要用在 is 或 in 中
 			select后面只能跟：参加分组的字段，以及分组函数。
 			其它的一律不能跟。
 
-	19.4、找出每个部门的最高薪资
+## 找出每个部门的最高薪资
 		实现思路是什么？
 			按照部门编号分组，求每一组的最大值。
 
@@ -1075,7 +336,7 @@ not 可以取非，主要用在 is 或 in 中
 			|     30 |  2850.00 |
 			+--------+----------+
 
-	19.5、找出“每个部门，不同工作岗位”的最高薪资？
+## 找出“每个部门，不同工作岗位”的最高薪资？
 		+--------+-----------+---------+--------+
 		| ename  | job       | sal     | deptno |
 		+--------+-----------+---------+--------+
@@ -1118,11 +379,11 @@ not 可以取非，主要用在 is 或 in 中
 		|     30 | SALESMAN  |  1600.00 |
 		+--------+-----------+----------+
 		
-	19.6、使用having可以对分完组之后的数据进一步过滤。
+## 使用having可以对分完组之后的数据进一步过滤。
 	having不能单独使用，having不能代替where，having必须
 	和group by联合使用。
 
-	找出每个部门最高薪资，要求显示最高薪资大于3000的？
+## 找出每个部门最高薪资，要求显示最高薪资大于3000的？
 
 		第一步：找出每个部门最高薪资
 			按照部门编号分组，求每一组最大值。
@@ -1173,7 +434,7 @@ not 可以取非，主要用在 is 或 in 中
 				where和having，优先选择where，where实在完成不了了，再选择
 				having。
 		
-		19.7、where没办法的？？？？
+## where没办法的？？？？
 			找出每个部门平均薪资，要求显示平均薪资高于2500的。
 
 			第一步：找出每个部门平均薪资
@@ -1202,30 +463,283 @@ not 可以取非，主要用在 is 或 in 中
 			|     10 | 2916.666667 |
 			+--------+-------------+
 
-20、大总结（单表的查询学完了）
-	select 
-		...
-	from
-		...
-	where
-		...
-	group by
-		...
-	having
-		...
-	order by
-		...
+# 8、数据处理函数（单行处理函数）
+## 单行处理函数 
+### 特点：
+    1 一个输入对应一个输出。 
+    select lower(ename) as ename from emp;
+		+--------+
+		| ename  |
+		+--------+
+		| smith  |
+		| allen  |
+		| ward   |
+		| jones  |
+		| martin |
+		| blake  |
+		| clark  |
+		| scott  |
+		| king   |
+		| turner |
+		| adams  |
+		| james  |
+		| ford   |
+		| miller |
+		+--------+
+    14个输入，最后还是14个输出。这是单行处理函数的特点。  
+    2 函数名加小括号
+### dan处理函数常见的有哪些
+    1. lower 转换小写 
+    2. upper 转换大写
+       select upper(name) as name from t_student;
+    3. substr 取子串（substr( 被截取的字符串, 起始下标,截取的长度)）
+       select substr(ename, 1, 1) as ename from emp;
+		注意：起始下标从1开始，没有0.
+		找出员工名字第一个字母是A的员工信息？
+		第一种方式：模糊查询
+				select ename from emp where ename like 'A%';
+		第二种方式：substr函数
+				select ename from emp where substr(ename,1,1) = 'A';
+    4. concat函数进行字符串的拼接
+		select concat(empno,ename) from emp;
+		+---------------------+
+		| concat(empno,ename) |
+		+---------------------+
+		| 7369SMITH           |
+		| 7499ALLEN           |
+		| 7521WARD            |
 	
-	以上关键字只能按照这个顺序来，不能颠倒。
+    5. length 取长度
+      select length(ename) enamelength from emp;
+    6 trim 去空格
+	   select * from emp where ename = trim('   KING');
+    7. str_to_date 将字符串转换成日期
+    8. date_format 格式化日期
+    9. format 设置千分位
+    10. case..when..then..when..then..else..end
+        当员工的工作岗位是MANAGER的时候，工资上调10%，  
+        当工作岗位是SALESMAN的时候，工资上调50%,其它正常。
+       （注意：不修改数据库，只是将查询结果显示为工资上调）
+        select ename,job, sal as oldsal,(case job when 'MANAGER' then sal*1.1 when 'SALESMAN' then sal*1.5 else sal end) as newsal from emp;
+		
+		+--------+-----------+---------+---------+
+		| ename  | job       | oldsal  | newsal  |
+		+--------+-----------+---------+---------+
+		| SMITH  | CLERK     |  800.00 |  800.00 |
+		| ALLEN  | SALESMAN  | 1600.00 | 2400.00 |
+		| WARD   | SALESMAN  | 1250.00 | 1875.00 |
+		| JONES  | MANAGER   | 2975.00 | 3272.50 |
+		| MARTIN | SALESMAN  | 1250.00 | 1875.00 |
+		| BLAKE  | MANAGER   | 2850.00 | 3135.00 |
+		| CLARK  | MANAGER   | 2450.00 | 2695.00 |
+		| SCOTT  | ANALYST   | 3000.00 | 3000.00 |
+		| KING   | PRESIDENT | 5000.00 | 5000.00 |
+		| TURNER | SALESMAN  | 1500.00 | 2250.00 |
+		| ADAMS  | CLERK     | 1100.00 | 1100.00 |
+		| JAMES  | CLERK     |  950.00 |  950.00 |
+		| FORD   | ANALYST   | 3000.00 | 3000.00 |
+		| MILLER | CLERK     | 1300.00 | 1300.00 |
+		+--------+-----------+---------+---------+
+    11. round 四舍五入
+        select round(1236.567, 0) as result from emp; //保留整数位
+		select round(1236.567, 1) as result from emp; //保留1个小数
+		select round(1236.567, 2) as result from emp; //保留2个小数
+		select round(1236.567, -1) as result from emp; // 保留到十位。
+    12. select 'abc' from emp; // select后面直接跟“字面量/字面值” 会根据表结构生成相应量 例如下面的名字字段中有14个值  这样输入会生成14个值
+    select 'abc' as bieming from emp;
+		+---------+
+		| bieming |
+		+---------+
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		| abc     |
+		+---------+
+		mysql> select abc from emp;
+		ERROR 1054 (42S22): Unknown column 'abc' in 'field list'
+		这样肯定报错，因为会把abc当做一个字段的名字，去emp表中找abc字段去了。
 
-	执行顺序？
-		1. from
-		2. where+
-		3. group by
-		4. having
-		5. select
-		6. order by
+		select 1000 as num from emp; // 1000 也是被当做一个字面量/字面值。
+		+------+
+		| num  |
+		+------+
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		| 1000 |
+		+------+
+
+		结论：select后面可以跟某个表的字段名（可以等同看做变量名），也可以跟字面量/字面值（数据）。
+		select 21000 as num from dept;
+		+-------+
+		| num   |
+		+-------+
+		| 21000 |
+		| 21000 |
+		| 21000 |
+		| 21000 |
+		+-------+
+    13. rand() 生成随机数
+		mysql> select round(rand()*100,0) from emp; // 100以内的随机数
+    14. ifnull 可以将 null 转换成一个具体值 注意：NULL只要参与运算，最终结果一定是NULL。为了避免这个现象，需要使用ifnull函数。
+    ifnull函数用法：ifnull(数据, 被当做哪个值) 如果“数据”为NULL的时候，把这个数据结构当做哪个值。ifnull是空处理函数。专门处理空的。在所有数据库当中，只要有NULL参与的数学运算，最终结果就是NULL
+    补助为NULL的时候，将补助当做0
+    select ename, (sal + ifnull(comm, 0)) * 12 as yearsal from emp;
+				+--------+----------+
+				| ename  | yearsal  |
+				+--------+----------+
+				| SMITH  |  9600.00 |
+				| ALLEN  | 22800.00 |
+				| WARD   | 21000.00 |
+				| JONES  | 35700.00 |
+				| MARTIN | 31800.00 |
+				| BLAKE  | 34200.00 |
+				| CLARK  | 29400.00 |
+				| SCOTT  | 36000.00 |
+				| KING   | 60000.00 |
+				| TURNER | 18000.00 |
+				| ADAMS  | 13200.00 |
+				| JAMES  | 11400.00 |
+				| FORD   | 36000.00 |
+				| MILLER | 15600.00 |
+				+--------+----------+
+
+		
+
+## 多行处理函数 
+### 特点
+    多个输入，对应1个输出
+
+### 多处理函数常见的有哪些
+1 分组函数（多行处理函数）注意：分组函数在使用的时候必须先进行分组，然后才能用。如果你没有对数据进行分组，整张表默认为一组。
 	
+	找出最高工资？
+		mysql> select max(sal) from emp;
+		+----------+
+		| max(sal) |
+		+----------+
+		|  5000.00 |
+		+----------+
+	
+	找出最低工资？
+		mysql> select min(sal) from emp;
+		+----------+
+		| min(sal) |
+		+----------+
+		|   800.00 |
+		+----------+
+	
+	计算工资和：
+		mysql> select sum(sal) from emp;
+		+----------+
+		| sum(sal) |
+		+----------+
+		| 29025.00 |
+		+----------+
+	
+	计算平均工资：
+		mysql> select avg(sal) from emp;
+		+-------------+
+		| avg(sal)    |
+		+-------------+
+		| 2073.214286 |
+		+-------------+
+		14个工资全部加起来，然后除以14。
+	
+	计算员工数量？
+		mysql> select count(ename) from emp;
+		+--------------+
+		| count(ename) |
+		+--------------+
+		|           14 |
+		+--------------+
+	
+	分组函数在使用的时候需要注意哪些？
+
+		第一点：分组函数自动忽略NULL，你不需要提前对NULL进行处理。
+		第二点：分组函数中count(*)和count(具体字段)有什么区别
+			count(具体字段)：表示统计该字段下所有不为NULL的元素的总数。
+			count(*)：统计表当中的总行数。（只要有一行数据count则++）因为每一行记录不可能都为NULL，一行数据中有一列不为NULL，则这行数据就是有效的。
+		第三点：分组函数不能够直接使用在where子句中。
+			找出比最低工资高的员工信息。
+			select ename,sal from emp where sal > min(sal);
+			表面上没问题，运行一下？
+			ERROR 1111 (HY000): Invalid use of group function
+			说完分组查询(group by)之后就明白了了。
+		第四点：所有的分组函数可以组合起来一起用。
+			select sum(sal),min(sal),max(sal),avg(sal),count(*) from emp;
+			+----------+----------+----------+-------------+----------+
+			| sum(sal) | min(sal) | max(sal) | avg(sal)    | count(*) |
+			+----------+----------+----------+-------------+----------+
+			| 29025.00 |   800.00 |  5000.00 | 2073.214286 |       14 |
+			+----------+----------+----------+-------------+----------+
+
+# 9、分组查询（非常重要：五颗星*****）
+## 什么是分组查询？
+    在实际的应用中，可能有这样的需求，需要先进行分组，然后对每一组的数据进行操作。
+    这个时候我们需要使用分组查询，怎么进行分组查询呢？
+			select
+				...
+			from
+				...
+			group by
+				...
+			
+			计算每个部门的工资和？
+			计算每个工作岗位的平均薪资？
+			找出每个工作岗位的最高薪资？
+			....
+	将之前的关键字全部组合在一起，来看一下他们的执行顺序？
+		select
+			...
+		from
+			...
+		where
+			...
+		group by
+			...
+		order by
+			...
+		
+    以上关键字的顺序不能颠倒，需要记忆。执行顺序：
+			1. from
+			2. where
+			3. group by
+			4. select
+			5. order by
+		
+    为什么分组函数不能直接使用在where后面？
+			select ename,sal from emp where sal > min(sal);//报错。
+			因为分组函数在使用的时候必须先分组之后才能使用。
+			where执行的时候，还没有分组。所以where后面不能出现分组函数。
+
+			select sum(sal) from emp; 
+			这个没有分组，为啥sum()函数可以用呢？
+				因为select在group by之后执行。
+			
+	
+
+# 10、大总结（单表的查询）
 	从某张表中查询数据，
 	先经过where条件筛选出有价值的数据。
 	对这些有价值的数据进行分组。
@@ -1233,105 +747,53 @@ not 可以取非，主要用在 is 或 in 中
 	select查询出来。
 	最后排序输出！
 
-	找出每个岗位的平均薪资，要求显示平均薪资大于1500的，除MANAGER岗位之外，
-	要求按照平均薪资降序排。
-		select 
-			job, avg(sal) as avgsal
-		from
-			emp
-		where
-			job <> 'MANAGER'
-		group by
-			job
-		having
-			avg(sal) > 1500
-		order by
-			avgsal desc;
+	每一个字段都有：字段名、数据类型、约束等属性。
+	字段名可以理解，是一个普通的名字，见名知意就行。
+	数据类型：字符串，数字，日期等，后期讲。
 
-		+-----------+-------------+
-		| job       | avgsal      |
-		+-----------+-------------+
-		| PRESIDENT | 5000.000000 |
-		| ANALYST   | 3000.000000 |
-		+-----------+-------------+
+	约束：约束也有很多，其中一个叫做唯一性约束，这种约束添加之后，该字段中的数据不能重复。
 
 
+# 11、SQL语句的分类
+    DQL：
+            数据查询语言（凡是带有select关键字的都是查询语句）
+            select...
+
+    DML：
+            数据操作语言（凡是对表当中的数据进行增删改的都是DML）
+            insert delete update
+            insert 增
+            delete 删
+            update 改
+
+            这个主要是操作表中的数据data。
+
+    DDL：
+            数据定义语言
+            凡是带有create、drop、alter的都是DDL。
+            DDL主要操作的是表的结构。不是表中的数据。
+            create：新建，等同于增
+            drop：删除
+            alter：修改
+            这个增删改和DML不同，这个主要是对表结构进行操作。
+
+    TCL：
+            不是王牌电视。
+            是事务控制语言
+            包括：
+              事务提交：commit;
+              事务回滚：rollback;
+
+    DCL：
+            是数据控制语言。
+            例如：授权grant、撤销权限revoke....
 
 
-
-
-
-8、数据库当中最基本的单元是表：table
-
-什么是表table？为什么用表来存储数据呢？
-
-		姓名	性别	年龄(列：字段) 
-		---------------------------
-		张三	男			20            ------->行（记录）
-		李四	女			21            ------->行（记录）
-		王五	男			22            ------->行（记录）
-	
-数据库当中是以表格的形式表示数据的。
-因为表比较直观。
-
-任何一张表都有行和列：
-行（row）：被称为数据/记录。
-列（column）：被称为字段。
-	
-
-
-了解一下：
-		每一个字段都有：字段名、数据类型、约束等属性。
-		字段名可以理解，是一个普通的名字，见名知意就行。
-		数据类型：字符串，数字，日期等，后期讲。
-
-		约束：约束也有很多，其中一个叫做唯一性约束，
-这种约束添加之后，该字段中的数据不能重复。
-
-
-9、关于SQL语句的分类？
-
-DQL：
-				数据查询语言（凡是带有select关键字的都是查询语句）
-				select...
-
-DML：
-				数据操作语言（凡是对表当中的数据进行增删改的都是DML）
-				insert delete update
-				insert 增
-				delete 删
-				update 改
-
-				这个主要是操作表中的数据data。
-
-DDL：
-				数据定义语言
-				凡是带有create、drop、alter的都是DDL。
-				DDL主要操作的是表的结构。不是表中的数据。
-				create：新建，等同于增
-				drop：删除
-				alter：修改
-				这个增删改和DML不同，这个主要是对表结构进行操作。
-
-TCL：
-				不是王牌电视。
-				是事务控制语言
-				包括：
-					事务提交：commit;
-					事务回滚：rollback;
-
-DCL：
-				是数据控制语言。
-				例如：授权grant、撤销权限revoke....
-
-
-10、导入一下提前准备好的数据：
-source D:\course\03-MySQL\document\bjpowernode.sql
-
-注意： 这里source 的时候要先进入！！！！！即use！！！！！！
-               记住要把\变成/！ ！！！！！
-               路径中不要有中文！！！！
-mysql怎么导入sql文件-mysql教程-PHP中文网
+# 12、导入一下提前准备好的数据：
+    source D:\course\03-MySQL\document\bjpowernode.sql
+    注意： 1 这里source 的时候要先进入！！！！！即use！！！！！！
+          2 记住要把\变成/！ ！！！！！
+          3 路径中不要有中文！！！！
 
 
 
