@@ -1,27 +1,24 @@
 
 # 1、什么是数据库？什么是数据库管理系统？什么是SQL？他们之间的关系是什么？
 ## 数据库：
-		英文单词DataBase，简称DB。按照一定格式存储数据的一些文件的组合。
-		顾名思义：存储数据的仓库，实际上就是一堆文件。这些文件中存储了
-		具有特定格式的数据。
+	英文单词DataBase，简称DB。按照一定格式存储数据的一些文件的组合。
+	顾名思义：存储数据的仓库，实际上就是一堆文件。这些文件中存储了
+	具有特定格式的数据。
 
 ## 数据库管理系统：
-		DataBaseManagement，简称DBMS。
-		数据库管理系统是专门用来管理数据库中数据的，数据库管理系统可以
-		对数据库当中的数据进行增删改查。
+	DataBaseManagement，简称DBMS。
+	数据库管理系统是专门用来管理数据库中数据的，数据库管理系统可以
+	对数据库当中的数据进行增删改查。
 
-		常见的数据库管理系统：
-			MySQL、Oracle、MS SqlServer、DB2、sybase等....
+	常见的数据库管理系统：
+	MySQL、Oracle、MS SqlServer、DB2、sybase等....
 
 ## SQL：结构化查询语言
-		程序员需要学习SQL语句，程序员通过编写SQL语句，然后DBMS负责执行SQL
-		语句，最终来完成数据库中数据的增删改查操作。
-
-		SQL是一套标准，程序员主要学习的就是SQL语句，这个SQL在mysql中可以使用，
-		同时在Oracle中也可以使用，在DB2中也可以使用。
+	程序员需要学习SQL语句，程序员通过编写SQL语句，然后DBMS负责执行SQL
+	语句，最终来完成数据库中数据的增删改查操作。SQL是一套标准，程序员主要学习的就是SQL语句，这个SQL在mysql中可以使用，同时在Oracle中也可以使用，在DB2中也可以使用。
 
 ## DBMS SQl DB三者之间的关系？
-		DBMS--执行--> SQL --操作--> DB
+	DBMS--执行--> SQL --操作--> DB
 	
 
 
@@ -33,11 +30,10 @@
 
 ## 需要注意的事项
 ### 字符编码方式？
-			设置mysql数据库的字符编码方式为 UTF8
-			一定要注意：先选中第3个单选按钮，然后再选择utf8字符集。
+	设置mysql数据库的字符编码方式为 UTF8
+	一定要注意：先选中第3个单选按钮，然后再选择utf8字符集。
 ### 服务名称
-			默认是：MySQL
-			不用改。
+	默认是：MySQL.不用改。
 		
 ### 选择配置环境变量path：
 			如果没有选择怎么办？你可以手动配置
@@ -64,25 +60,24 @@
 
 
 # 5、在windows操作系统当中，怎么使用命令来启动和关闭mysql服务呢？
-net stop 服务名称;
-net start 服务名称;
+    net stop 服务名称; net start 服务名称;
 
 
 # 6、mysql安装了，服务启动了，怎么使用客户端登录mysql数据库呢？
--mysql -uroot -p123456
--本地登录（隐藏密码的形式）：
-mysql -uroot -p
+    -mysql -uroot -p123456
+    -本地登录（隐藏密码的形式）：
+    mysql -uroot -p
 		
 
 # 7、mysql常用命令：注意：以下命令不区分大小写，都行。
 ## 退出mysql ：
-exit
+    exit
 
 ## 查看mysql中有哪些数据库
--show databases; 注意：以分号结尾。mysql默认自带了4个数据库。
+    -show databases; 注意：以分号结尾。mysql默认自带了4个数据库。
 
 ## 怎么选择使用某个数据库呢？
-use test;
+    use test;
 
 ## 怎么创建数据库呢？
 create database bjpowernode;
