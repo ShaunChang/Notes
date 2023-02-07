@@ -1,11 +1,9 @@
 
 # 1、什么是数据库？什么是数据库管理系统？什么是SQL？他们之间的关系是什么？
-## 数据库：
-	英文单词DataBase，简称DB。按照一定格式存储数据的一些文件的组合。
-	顾名思义：存储数据的仓库，实际上就是一堆文件。这些文件中存储了
-	具有特定格式的数据。
+数据库：  
+      英文单词DataBase，简称DB。按照一定格式存储数据的一些文件的组合。顾名思义：存储数据的仓库，实际上就是一堆文件。这些文件中存储了具有特定格式的数据。
 
-## 数据库管理系统：
+数据库管理系统：
 	DataBaseManagement，简称DBMS。
 	数据库管理系统是专门用来管理数据库中数据的，数据库管理系统可以
 	对数据库当中的数据进行增删改查。
@@ -13,11 +11,11 @@
 	常见的数据库管理系统：
 	MySQL、Oracle、MS SqlServer、DB2、sybase等....
 
-## SQL：结构化查询语言
+SQL：结构化查询语言
 	程序员需要学习SQL语句，程序员通过编写SQL语句，然后DBMS负责执行SQL
 	语句，最终来完成数据库中数据的增删改查操作。SQL是一套标准，程序员主要学习的就是SQL语句，这个SQL在mysql中可以使用，同时在Oracle中也可以使用，在DB2中也可以使用。
 
-## DBMS SQl DB三者之间的关系？
+DBMS SQl DB三者之间的关系？
 	DBMS--执行--> SQL --操作--> DB
 
 
@@ -26,18 +24,17 @@
 	第二步：需要进行MySQL数据库实例配置。
 	注意：一路下一步就行了！！！！！
 
-## 需要注意的事项
-### 字符编码方式？
+字符编码方式？
 	设置mysql数据库的字符编码方式为 UTF8
 	一定要注意：先选中第3个单选按钮，然后再选择utf8字符集。
-### 服务名称
+服务名称
 	默认是：MySQL.不用改。
 		
-### 选择配置环境变量path：
+选择配置环境变量path：
 	如果没有选择怎么办？你可以手动配置
 	path=其它路径;C:\Program Files (x86)\MySQL\MySQL Server 5.5\bin
 		
-### mysql超级管理员用户名不能改，一定是：root
+mysql超级管理员用户名不能改，一定是：root
 	你需要设置mysql数据库超级管理员的密码。
 	我们设置为123456
 	设置密码的同时，可以激活root账户远程访问。
@@ -68,28 +65,28 @@
 		
 
 # 7、mysql常用命令：注意：以下命令不区分大小写，都行。
-## 退出mysql ：
+退出mysql ：
     exit
 
-## 查看mysql中有哪些数据库.
+查看mysql中有哪些数据库.
     -show databases;  
 
-## 怎么选择使用某个数据库呢？
+怎么选择使用某个数据库呢？
     use xxx;
 
-## 怎么创建数据库呢？
+怎么创建数据库呢？
     create database xxx;
 
-## 查看某个数据库下有哪些表？
+查看某个数据库下有哪些表？
     show tables;
 
-## 查看mysql数据库的版本号：
+查看mysql数据库的版本号：
     select version();
 
-## 查看当前使用的是哪个数据库？
+查看当前使用的是哪个数据库？
     select database();
 
-## 如何建表
+如何建表
     create table 表名（字段名 字段类型（定义size）deafult '默认值'，字段名 字段类型）；
     eg: create table t_student(
 		no int,
@@ -99,7 +96,7 @@
 		email varchar(255)
 	);
 
-## 如何插入数据insert （DML）
+如何插入数据insert （DML）
     insert into 表名(字段名1,字段名2,字段名3...) values(值1,值2,值3);
     eg1：insert into t_student(no,name,sex,age,email) values(1,'zhangsan','m',20,'zhangsan@123.com');
     eg2：insert into t_student(email,name,sex,age,no) values('lisi@123.com','lisi','f',20,2);  
@@ -111,28 +108,28 @@
 
 
 ## insert插入日期
-### 格式化数字：format(数字, '格式')
+格式化数字：format(数字, '格式')
     select ename,format(sal, '$999,999') as sal from emp;  
-### 将字符串varchar类型转换成date类型 mysql的日期格式：str_to_date：
+将字符串varchar类型转换成date类型 mysql的日期格式：str_to_date：
     %Y年 %m月 %d 日%h	时%i 分%s	秒
     eg：类型不匹配。数据库birth是date类型，这里给了一个字符串varchar。
     insert into t_user(id,name,birth) values(1, 'zhangsan', '01-10-1990'); // 1990年10月1日
     应该是：
     insert into t_user(id,name,birth) values(1, 'zhangsan', str_to_date('01-10-1990','%d-%m-%Y'));  
-### date_format(日期类型数据, '日期格式')：将date类型转换成具有一定格式的varchar字符串类型  
+date_format(日期类型数据, '日期格式')：将date类型转换成具有一定格式的varchar字符串类型  
     create table t_user(id int,name varchar(32),birth date // 生日也可以使用date日期类型);  
     create table t_user(id int,name varchar(32),birth char(10) // 生日可以使用字符串，没问题);  
-### 查询的时候以某个特定的日期格式展示
+查询的时候以某个特定的日期格式展示
     select id,name,date_format(birth, '%m/%d/%Y') as birth from t_user;  
 
-## 怎么查看表中的数据呢
+怎么查看表中的数据呢
     select * from 表名; 
 
-## 不看表中的数据，只看表的结构，有一个命令：
+不看表中的数据，只看表的结构，有一个命令：
     desc 表名;
 
-## 如何查询一个字段
-    select 字段名 from 表名;
+如何查询一个字段
+  select 字段名 from 表名;
 
 ## 查询两个字段，或者多个字段怎么办
     使用逗号隔开 :select deptno,dname from dept
