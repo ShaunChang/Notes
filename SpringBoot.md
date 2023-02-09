@@ -636,9 +636,15 @@ springboot框架
 aspect框架
 在xml文件中配置事务控制的内容
 
-
 # 53 项目依赖
-
+    lombok
+    Spring web
+    spring Data JPA
+    H2 database
+    PostgreSQL Driver
+    Validation
+    Flyway Migration
+    Spring boot Actuator
 
 # 54 mapper文件
 ## 目的
