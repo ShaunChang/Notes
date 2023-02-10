@@ -575,9 +575,46 @@
 
 # 41 spa应用
     首先说一下什么是多页面应用：去一个页面刷新一次，每个页面中重复的部分你也总得重复写 很笨重。
-    spa：渲染不同内容时不是通过切换页面来实现，而是通过js更新dom实现
+    spa：渲染不同内容时不是通过切换页面来实现，切换页面不发请求，而是通过js更新dom实现。
 
 # 42 要给item加kehy的报错
     当你自己手写几个一摸一样的dom的时候 react会自动给你给每个打上key。 但是如果是动态生成的，比如你用map，react这时无法加key，因为这是页面到浏览器之后的事 react只能在之前做
 
+# 43 什么是路由
+    一个路由就是一个映射关系
+    key是你输入的path：locahost/home'
+    value: 是对应的component
+
+# 44 怎么用路由
+### 安装react-router-dom  
+    npm add react-router-dom@5
+
+### 原理
+    就是改变了地址栏地址，其实就是改了history 做了replace替换，把现在显示的url改成了另一个，但不发请求。每个地址栏地址对应一个组件。
+    其实底层还是把link转为了a标签 嫁了listen让页面不跳转
+
+### 步骤
+    路由链接link和route路由要放在一个路由管理器中，可以把整个app包起来
+    路由管理器：<BrowserRouter></BrowserRouter>
+    把a标签换为link：<Link className="" to="/about">About</Link>
+    route：<Route path="/about" component={About}/>
+    
+### 路由组件和普通组件的区别
+    路由组件：<Route path="/about" component={About}/>应该放在page包下
+    路由组件在被render的时候被自动传了些东西：history location match。普通组件传了什么pros就收到什么
+
+### navlink：点谁就给谁加一个类名 类名规定：activeClassName="xxxx"
+    点的时候老闪怎么办：可能是你用了的bootstrap的权重太高导致的  方法是在每个新增的css后加！important
+
+### 封装navlink
+    navlink哪些classname一大堆 每次都要复制 很冗余 你把它封装成一个普通mynavlink组件，classname固定好，前面
+    调用mynavlink的时候只需要传props就行：
+    export defalut class MyNavLink extend Component{
+    render(){
+    return(
+        <NavLink className="xx" className="xxx" {...this.props}>
+        // 这里的。。。this。props就把前面传的所有的props都取出来放上了  其中包括children，就是前面mynavlinkl的标签题体内容
+    )
+    }
+}
 
