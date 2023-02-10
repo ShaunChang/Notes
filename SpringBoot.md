@@ -834,3 +834,109 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
         return propertyGetDtos;
     }
 ```
+
+
+# 59 SQL
+### data persistence 方式有哪些
+    放在文件里 好处：删除方便 
+    放在数据库里 好处：提供很多数据处理的方式
+### 为什么要data persistence
+    你把数据弄好不存下来你下次访问啥？傻逼
+### 为什么要用数据库
+    控制数据冗余：也不一定 还有时候会用冗余换performance
+    data sharing        
+    可以对写入进行约束
+    访问限制
+    backup和recovery
+### 怎么设置主建
+    自增
+    与业务无关：1 数据安全，比如你用名字+地址为主建 数据有泄漏风险，2 业务变不会影响主建
+    唯一性
+### 怎么设置外建
+    主键相关数据设置软删除功能（is——deleted字段），避免防止主键数据删除导致外建找不到数据的情况发生
+### 什么是索引
+    把某个字段或者某几个字段的数据按某种方式（索引）排序，比如name上你弄索引，比如啊 人家按照字母顺序排序了，可能这儿的索引就是a b c。。。这个东西。下次你要查name是ash的帅哥。以前的方法是一个 一个找，笨笨的 假如你数据有几十亿，小心给你累死。现在有索引了，一看，妈的字母a开头，就去字母a那一团数据里找ash
+### 怎么设置索引
+    在mysql当中，主键上，以及unique字段上都会自动添加索引的！！！！
+    什么条件下，我们会考虑给字段添加索引呢？
+    条件1：数据量庞大（到底有多么庞大算庞大，这个需要测试，因为每一个硬件环境不同）
+    条件2：该字段经常出现在where的后面，以条件的形式存在，也就是说这个字段总是被扫描。
+    条件3：该字段很少的DML(insert delete update)操作。（因为DML之后，索引需要重新排序。）
+
+	建议不要随意添加索引，因为索引也是需要维护的，太多的话反而会降低系统的性能。
+	建议通过主键查询，建议通过unique约束的字段进行查询，效率是比较高的。
+
+# 60 postgres
+
+# 61 docker.component.yml
+### 模版
+    version: '3.7'
+
+    services:
+    postgres:
+    image: postgres:14.2-alpine
+    volumes:
+    postgresql_data:/var/lib/postgresql/test/data/
+    restart: always
+    ports:
+        15432:5432
+    environment:
+        POSTGRES_DB=weather 
+        POSTGRES_USER=postgres
+        POSTGRES_PASSWORD=admin
+    networks:
+        persist
+
+    pgadmin:
+        image: dpage/pgadmin4
+        volumes:
+            pgadmin-data:/var/lib/test/pgadmin
+            restart: always
+        ports:
+            18002:80
+        environment:
+            //用浏览器打开paamdin 用下面的登录
+            PGADMIN_DEFAULT_EMAIL: admin@test.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        networks:
+            persist
+
+    graphql-engine:
+        image: hasura/graphql-engine:v2.9.0
+        ports:
+            "18080:8080"
+        depends_on:
+            "postgres"
+        restart: always
+        environment:
+            // postgres database to store Hasura metadata
+            HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:admin@postgres:5432/weather
+            // this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
+            PG_DATABASE_URL: postgres://postgres:admin@postgres:5432/weather
+            // enable the console served by server
+            HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+            // enable debugging mode. It is recommended to disable this in production
+            HASURA_GRAPHQL_DEV_MODE: "true"
+            HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+            // uncomment next line to set an admin secret
+            // HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+        networks:
+            persist
+
+        volumes:
+        postgresql_data: {}
+        pgadmin-data: {}
+        networks:
+        persist: {}
+### docker.component.yml文件中postgres.port字段xxx:xxx冒号前后数字是什么意思
+    xxx:xxx冒号前后数字是指定容器内Postgres数据库的端口号。比如：5432:5432，
+    表示容器内的Postgres数据库的端口号为5432，并且可以通过这个端口从本地主机访问Postgres容器中的数据库。
+    也可以理解为给localhost暴露了一个端口，这样一来本地也可以访问那个postgres，比如在浏览器localhost:xxx就可以进入postgres/pgamdin之类的东西
+
+### pgadmin用localhost装的话怎么配置？
+    上面的配置是把pgadmin和postgres都弄在docker里面
+    你要使用本地的，pgadmin创建链接的时候host填localhost。它这个写法是基于docker容器的，意思就是在docker容器里找这个东西
+
+### pgadmin创建链接的时候hostname是什么
+    你用localhost，名字就是localhost
+    你用docker里面的服务 名字就是那个服务的名字 比如postgres
