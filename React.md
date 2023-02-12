@@ -421,6 +421,7 @@
     
     -robots.txt: 爬虫规定文件。规定哪些你能爬 哪些不能
     -mainfest.json: 手机app加壳配置  加上壳后 html网页app变成安卓或者ios
+
     src
     -index.js: 入口，其实就是ReactDOM.render。注意：<React.stricctMode>放在这儿的目的是为了检查你写的一些子组件是否合理。比如你写了个ref=“”这种方式的ref 它会给你检查出来告诉你 这个东西弃用了 由于react中经常发生这样的事 你有时候不知道 所以给你检查检查
     简单写法：
@@ -433,7 +434,6 @@
     原生写法：
     
     -App.js：所有的组件放这儿，这是一个整体
-    
     -index.css: 一些通用的css
     -ReportWebVitals：用于记录性能的
     -SetUpTests。js：用于做组件测试的
@@ -590,10 +590,15 @@
     npm add react-router-dom@5
 
 ### 原理
-    就是改变了地址栏地址，其实就是改了history 做了replace替换，把现在显示的url改成了另一个，但不发请求。每个地址栏地址对应一个组件。
-    其实底层还是把link转为了a标签 嫁了listen让页面不跳转
+    就是改变了地址栏地址，其实就是改了history ，默认为put模式，点一个link，就把一个link压在history栈中。就把现在显示的url改成了另一个，但不发请求。路由器会检查url变化，每个地址栏地址对应一个组件。
+    其实底层还是把link转为了a标签 加了listen让页面不跳转。即路由路径是特殊a标签 它不跳转
+
+### 路由匹配顺序
+    是从最开始注册的路由到最后注册的路由匹配的，最先匹配的路由一定是app里的
 
 ### 步骤
+    npm add react-router-dom@5
+    import  {Route,navlink...} from 'react-route-dom' 注意react-route-dom都是分别暴露 所以用花括号引入
     路由链接link和route路由要放在一个路由管理器中，可以把整个app包起来
     路由管理器：<BrowserRouter></BrowserRouter>
     把a标签换为link：<Link className="" to="/about">About</Link>
@@ -601,9 +606,12 @@
     
 ### 路由组件和普通组件的区别
     路由组件：<Route path="/about" component={About}/>应该放在page包下
-    路由组件在被render的时候被自动传了些东西：history location match。普通组件传了什么pros就收到什么
+    路由组件在被render的时候被自动往props传了些东西：history location match。普通组件传了什么pros就收到什么
 
-### navlink：点谁就给谁加一个类名 类名规定：activeClassName="xxxx"
+### navlink：
+    作用：点谁就给谁加一个类名 
+    类名规定：activeClassName="xxxx"
+    通过this。props。children获取标签体内容
     点的时候老闪怎么办：可能是你用了的bootstrap的权重太高导致的  方法是在每个新增的css后加！important
 
 ### 封装navlink
@@ -618,3 +626,134 @@
     }
 }
 
+### switch：提高效率
+    干嘛的：正常route会一个一个匹配path 匹配上了还会往下匹配 直到弄完为止 因为path可以重复 试想你现在有1000000个path="/about" 一个弄完还有一个 消耗资源
+    用switch把所有route包起来，就会匹配一个后停止
+    
+    注意以最上一个为主
+
+### 解决刷新后丢失样式问题
+    多级路径下刷新可能会丢失样式，因为在页面引入css中你可能写的是./css.....这里的./就会把多级路径前面那个路径也带进去
+    解决方法一：
+    引入css用%PUBLIC_URL% 绝对路径 代表pulic文件夹
+
+    解决方法二：
+    用hashrouter：localhost:3000/#/atguigu/home 好处是它把#号后面的都认为是前端资源
+    
+    解决方法三：
+    把.删除
+
+### yarn和npm不要混用
+    容易造成包的丢失。你的包被两个包管理器管，比如npm启动项目，项目下的包也都是npm管，突然，其中还有个yarn安装的包 npm找不到那个包，项目报错
+
+### 模糊匹配和严格匹配
+    默认就是模糊匹配：link：  to="/hone/xxf/xf"  <Route path="/home">    第一个对上了就行 后面的随便 注意 必须是第一个 
+    精准匹配：<Route exact path="xxx" component={xxx}>
+    
+    注意：不要随便开启严格模式 会引发很严重的问题！！！ 原则上只要不影响页面展示你就别用严格模式。例如你给父组件开启严格模式，就意味着它下面的所有子路由全废了。比如现在 
+    父路由path="/home" 子路由：path="home/news" 你点击子路由，url变为home/news，从最开始注册的路由开始匹配，父组件直接挂载失败 子组件跟着吃屎（父组件render压根就没完成）
+
+### redirect： 默认选一个 兜底的
+    放在所有路由最下面 :<Redict to="/about"/>
+
+### 嵌套路由的写法
+    一定把父组件的路由也带上，这样父组件相关的路由才不会丢。因为url地址变，跟render一样，整体会从头匹配一遍。
+    不要给父开启严格模式
+
+### 向路由组件传递参数
+    react中的路由组件为什么不用props传参而要用params？
+    props是父组件传递给子组件的参数，它们是静态的，不能改变；而params是用来传递动态参数的，他们是通过URL来传递参数，可以改变。
+    
+    params参数法（用的最多）
+    1 用模版第字符串传值：<Link to="{`/home/pages/${dxxx.id}/${dxxx.title}`}">
+    2 必须在路由接收，不然由于模糊匹配把后面的会省略： <Route path="/home/message/:id/:title" component={dxx}>
+    3 组件里怎么取pramas呢？在match里以对象形式存好了，所以：
+    this.props.match.params
+    4 刷新不丢数据
+
+    search参数法
+    1 用模版第字符串传值：<Link to="{`/home/pages/？id=${dxxx.id}&title=${dxxx.title}">
+    2 无需声明接收
+    3 组件里怎么取search呢？在location里用urlencode形式（key=value&key=value）存好了，所以
+    import qs from 'querystring'    //qs.prase可以把urlencode转化为obj
+    const {search} = this.props.location
+    const res = qs.parse(search)
+    4 刷新不丢数据
+
+    state参数法（跟组件的state没关系）
+    1 用对象形式传值：<Link to={{pathname:'/home/state',state:{id:xxx,title:xxx}}}>
+    2 无需声明接收
+    3 组件里怎么取pramas呢？在match里以对象形式存好了，所以：
+    const {} = this.props.location.state || {}   //这个一定要写 不然清理缓存前端会报错：找不到state 因为state都是存在history里的 默认为undefined
+    this.props.location.state
+    4 优点：刷新不丢数据 
+           参数不在url体现 安全
+    
+    params和serach传值语句都可以改成state那种对象的形式 就是把后面的state换成params就行
+
+### 开启replace模式
+    好处：
+    不留访问痕迹 不能回退
+    
+    <link replace={true} to=xxx>
+    或者<ling replace to=xxx>
+
+
+### 编程式路由导航
+    干嘛的 
+    不借助用户点击 用程序跳转link。比如需求：1 当用户点击首页图标后三秒，转到about页面，这里的about没人点 
+                                      2 一个页面下有两个按钮，一个push点击用push跳转 一个replace点击用replace跳转 
+    
+    怎么用
+    this.props.history 里面有replace forward goback go(参数为n 表示前进几步) push这些方法，安倍path放里面就行了了 param 和search传参和之前的一样
+    this.props.history.replace(`/about/${id}/${xx}`)
+    state：
+    this.props.history.replace(`/about/xxx`,{id,title})
+
+### 普通组件想用路由组件api怎么办
+    暴露组件的时候加个withrouter：export default withRouter(xxx)
+
+### BrowserRouter和HashRouter的区别
+    1 底层原理不一样：b用的是history，能留下访问记录。ie9以下不兼容。 
+                    h用的是url哈希值
+    2 url b中有#
+    3 刷新后b不会丢失state参数 h会
+    4 h能解决样式丢失的问题
+
+    
+
+# 46 ReactRouter 6
+### 对比上面的5有什么变化
+    1. 用routes替换了switch,且必须写上！之前switch可以省略
+    2. 用element替换了component，并且用花括号包住component：element={<About/>}
+    3. 用navigate替换了redirect，<Route path="/" element={<Navigate to="xxx"/>}/> navigage就是渲染到组件视图就切换 说白了只要匹配上了不用用户点就能自动切换页面
+    4. route中加入了casesensitive 大小写敏感
+    5. navlink自定义点击更换类名，className后面跟箭头函数
+    6. useRoutes：路由表：就是<Routes><Route path="/about" element={<About/>}></Routes>的简化形式，表内写核心mapper关系即可，useRoutes帮你生成前面那一坨
+    const element = userRoutes([{path:'/about',element:<About/>}])  然后把element放在想要显示的地方即可
+    7. 把所有路由放在routes文件夹下的index.js文件中，用的地方引入即可
+    8. 嵌套路由：在children中定义：userRoutes([{path:'/about',element:<About/>,children:[{path:'xx',element:<About/>}]}])注意chinldren不要斜杠路径
+                link中to="news"不能加斜杠，或者用./news，斜杠的意思是不管你在哪，带着/就是根了
+                用outlet占坑
+    9. link中的end属性，加了end意思是如果我的子集匹配了 我就失去active高亮，或者失去classname指定的样式
+    10. 使用useparams接收路由参数L：const {xx,xx,xx} = useParams()
+    11. usenaviget：编程式路由 const navigate = useNavigate()  
+    navigate(
+    '/about' ,//去哪儿，注意如果是子路由不用写/
+    {//一些配置
+        replace：true,
+        //编程式路由导航传参只支持state
+        state:{
+         id:xxx,
+         name:xxx
+        }
+    }
+    )
+    前进：navigate(+1)
+    后退：navigate(-1)
+    12. const s = useRoutes() s为boolean 表示当前组件是否被路由管理器包裹
+    13. useNavigationType()  返回用户是如何来到当前页到 pop（直接通过刷新来的）put replace
+    14. useoutlet 返回当前组件下属的子组件，前提是子组件要挂载上
+    15. useoutletresolvedpath 给定一个url 解析出其中的path serch hash
+### 如何使用
+    1. 安装：npm i react-router-dom
