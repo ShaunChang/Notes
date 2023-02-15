@@ -163,6 +163,9 @@
 ### this
     函数式组件没有this
     原本应该是window，但是显示出来时undifiended，原因是因为babel翻译完后会开启严格模式，严格模式下不允许this指向window
+### props
+    注意接收props的时候带{}：
+    const About = ({xx,xx,xx})=>{}
 
 # 9 类式组件
 ### js class类
@@ -719,7 +722,6 @@
     2 url b中有#
     3 刷新后b不会丢失state参数 h会
     4 h能解决样式丢失的问题
-
     
 
 # 46 ReactRouter 6
@@ -756,4 +758,15 @@
     14. useoutlet 返回当前组件下属的子组件，前提是子组件要挂载上
     15. useoutletresolvedpath 给定一个url 解析出其中的path serch hash
 ### 如何使用
-    1. 安装：npm i react-router-dom
+    1. 安装：npm i react-router-dom、
+
+
+
+# 47 component下文件后缀:jsx index.js
+    首先明白效果一样
+    jsx后缀文件：一个组件文件中有可能还有其他的js文件 全都是js结尾你不知道哪个是组件js 用jsx就可以一眼识别
+    index.js: 这样写的好处是在其他组件想引用你这个组件时组件名就可以省略: import xx from 'component/Welcome/Welcome(省略)'
+
+
+# 48 边框双层怎么办L：两个边框在一起
+    margin-bottom: -8px;
