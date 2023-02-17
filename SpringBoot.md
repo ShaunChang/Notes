@@ -837,6 +837,7 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
 
 
 # 59 SQL
+### 数据库怎么设计
 ### data persistence 方式有哪些
     放在文件里 好处：删除方便 
     放在数据库里 好处：提供很多数据处理的方式
@@ -867,7 +868,6 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
 	建议通过主键查询，建议通过unique约束的字段进行查询，效率是比较高的。
 
 # 60 postgres
-
 # 61 docker.component.yml
 ### 模版
     version: '3.7'
@@ -928,6 +928,7 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
         pgadmin-data: {}
         networks:
         persist: {}
+
 ### docker.component.yml文件中postgres.port字段xxx:xxx冒号前后数字是什么意思
     xxx:xxx冒号前后数字是指定容器内Postgres数据库的端口号。比如：5432:5432，
     表示容器内的Postgres数据库的端口号为5432，并且可以通过这个端口从本地主机访问Postgres容器中的数据库。
@@ -940,3 +941,76 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
 ### pgadmin创建链接的时候hostname是什么
     你用localhost，名字就是localhost
     你用docker里面的服务 名字就是那个服务的名字 比如postgres
+
+# 60 关系型数据库和非关系型数据库的区别是什么
+    关系型数据库是一种基于表结构来管理数据的数据库，表中的数据以行和列的形式存储，其中每一行表示一条记录，每一列表示一个字段。关系型数据库运用SQL语句来定义、存取和处理数据。
+    
+    非关系型数据库不需要遵循表结构，其数据以文档、图像、视频等格式存储，不需要定义表结构和字段，可以存储各种格式的数据，并且可以动态地添加新的字段。非关系型数据库主要运用非结构化查询语言（NoSQL），如MongoDB、Redis等来查询和处理数据。
+
+# 61 JPA
+
+### ORM(objefct relational mapping)：
+    解决oop与关系型数据将不匹配的技术，数据取出来封装为对象，对象存进去转化为数据
+
+### 没有ORM的世界
+    手写sql。逐表逐字段陈操作。eg：在dao中做很多读取对象数据，改变状态等重复操作
+
+### 常见ORM
+    herbinate：宣称不用写一行sql
+    mybatis：动态sql见长
+
+### 缺点
+    转换耗CPU，所以在高性能需求的时候不用ORM
+
+### 什么是JPA（java persistence API）
+    是一套规范。主打定义，比如告诉你ontomany的时候依赖哪个字段转换，是老板，告诉你怎么做
+    ORM是打工的，而ORM是一种实现JPA的技术。主要为了简化持久化开发和整合ORM技术
+
+### 如何使用JPA
+    添加依赖
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.flywaydb:flyway-core'
+	runtimeOnly 'org.postgresql:postgresql'
+
+    application中配置相关信息，让项目找到数据库，jpa等
+        spring:
+        datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:15432/postgres?currentSchema=weather //不同环境这三个会被重写
+        username: postgres
+        password: admin
+        flyway:
+        enabled: true
+        schemas: weather
+        
+        jpa:   //做数据迁移用
+        properties:
+        hibernate:
+        default_schema: weather
+        jdbc:
+        time_zone: UTC
+        show-sql: true
+
+### 快速上手weather实例
+    @Entity //告诉这是一个希望映射的class 个人想法：把这些带entity的class'集合在某个地方'，当数据转换开始的时候，相关的工具（orm）回去这个地方找它的目标class 从而进行转换 你不放这个人家可能转换的时候找不到这个类
+    public class Weather{
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)//自增
+     //不规定name，自动认为是下面的id  其他的设置其实就是@notnull 这些 看个人习惯 只不过notnull是lombok 注意不要把混用lombok的data和jpa
+    private Long id；
+    }
+
+    @Repository 
+    public interface xxxRepository extends JpaRepository
+### JPA使用注意：
+    不要把混用lombok的data和jpa
+    用@Builder的时候一定加@NoargsConstructor
+
+### 自定义简单查询
+    findxxBy queryXXBy 可以加一And Or关键字  约定大于配置，你把名字按约定写好，参数按约定规定好，人家自定帮你写sql
+
+
+# 63 weather app
+### 为什么创建自己的数据库，数据从api来不就行了？
+    这种openapi一般都会有限制访问次数之类的，然后天气数据也不会更新很频繁，为了不让第三方server（openapi）影响我们的server，自己存数据
+    
