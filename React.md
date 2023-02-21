@@ -756,7 +756,7 @@
     12. const s = useRoutes() s为boolean 表示当前组件是否被路由管理器包裹
     13. useNavigationType()  返回用户是如何来到当前页到 pop（直接通过刷新来的）put replace
     14. useoutlet 返回当前组件下属的子组件，前提是子组件要挂载上
-    15. useoutletresolvedpath 给定一个url 解析出其中的path serch hash
+    15. useoutletresolvedpath 给定一个url 解析出其中的path serch hashsta
 ### 如何使用
     1. 安装：npm i react-router-dom、
 
@@ -770,3 +770,83 @@
 
 # 48 边框双层怎么办L：两个边框在一起
     margin-bottom: -8px;
+
+# 49 如何决定组件是否需要拆分
+    1 看这个东西你是否需要复用
+    2 这部分未来会变，抽出来，方便维护
+
+# 50 context
+    是啥
+    一种组件间通信方式。特别实用于祖组件和后代组件间的通信，父子间可以直接用props传递，所以可以不用这个 
+    
+    怎么用
+    1 创建context容器对象
+    const XxxContext = React.createContext() 注意首字母大写，并放在所有组件都能访问的地方
+    2 用<XxxContext.provider></>包裹子组件、
+    3 通过value把想传的值放进去：
+        放字符串：<XxxContext.provider value={变量名}></>包裹子组件
+        放对象：<XxxContext.provider value={{name:'xx',age: 18}}></>包裹子组件
+    4 使用的人举手：
+        类组件：static contextType = MyContent    this.context
+        类组件/函数组件：<XxxContext.consumer>
+                        {
+                            value => (
+                               return(`xxx${value.name}`)
+                            )
+                        }
+                      </>
+        或者在一个类中把这个context暴露出来，在需要用的组件中接收这个context：import XxxContent
+                const {comments, deleteCommont} = useContext(XxxContent)
+
+# 51 reducer
+    干嘛的
+    管理复杂状态的
+    问：为什么不用state 答：state只能进行简单状态管理：setState（）  需求：state是一个数组。 要求：把第三个删除   setstte怎么做？？？用reducer你就可以在里面弄一些函数去处理这个了
+
+    react中的usereducer是干嘛的
+    是 React 中的一个 Hook，它接受一个 reducer 函数和一个初始化的状态值，然后返回当前状态和一个 dispatch 函数，
+    它可以接受一个 action 对象来更改当前状态值，并返回新的状态值。`useReducer` 主要用于管理复杂的状态，而不是简单的 state。 
+    
+    dispatch是干嘛的？ dispatch 是一个函数，用于改变状态值，它接受一个 action 对象作为参数，然后根据 action 对象的属性和值来更新状态值。
+
+    什么是action对象，举个例子？ 
+    Action 对象是一个 JavaScript 对象，它用于描述一个动作，并包含一些用于更改状态的属性和值。例如：
+    const action = {
+      type: "ADD_TODO",
+      payload: {
+        text: "Learn React"
+      }
+    };
+
+    怎么用
+    1 写一个action：const myReducer = (initialDate: any, action: any) => {
+                        switch(action.type) {
+                            case 'add'
+                                return initialData+action.number
+                            case 'decrease'
+                                return initialData-1
+                            default:
+                                return initialData
+                        }
+                    }
+    2 创建reducer： const [num, dispatch] = useReducer(myReducer, 0)
+    3 用： <div>   {num}   <button onClick={()=>{ dispatch({type:add, number: 22})  }}></div>
+
+# webstorage
+    cookie session复习：
+    cookie生命周期是多久
+    cookie的生命周期取决于它的失效时间，如果没有设定失效时间，那么cookie就会在当前会话结束时过期，也就是浏览器关闭的时候结束。session生命周期通常为一个会话，也就是说，当用户关闭浏览器或关掉网页时，session会话就会被终止，session里的数据也就被清空。这么说session和cookie的生命周期一样？这仅仅是相似之处，session的生命周期是从用户登录到登出，而cookie在用户关闭浏览器或关掉网页后就会被销毁。举例来说，如果用户访问某个网站，那么在这个网站上cookie的存在会持续到用户关闭浏览器，而session则会在用户登出后销毁。session是服务器端开辟的内存还是浏览器开辟的内存？
+
+	session是由服务器端开辟的内存，它会将session信息存储在服务器上，每个客户端都会有一个唯一的session ID来标识，浏览器会将这个session ID通过cookie的方式发送给服务器，服务器根据这个session ID来找到对应的session信息。
+
+    内存多大
+    cookie: 4kb: 一次会话
+    sessionStorage: 5mb 登录登出
+    localstorage：5mb 永久，直到用户手动清理缓存。 数据不能被爬虫抓
+
+    怎么用localstorage
+    存
+    localstorage.setItem("Notes",JSON.stringify(notes))
+    取
+    const data = JSON.parse(locastorage.getItem("Notes"))
+    注意神坑：：：useeffect有顺序！！！！！！！！！！！！！！！！！！！！！！所以把取的那个effect放在set的前面 不然存空值

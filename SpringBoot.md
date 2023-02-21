@@ -866,6 +866,17 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
 
 	建议不要随意添加索引，因为索引也是需要维护的，太多的话反而会降低系统的性能。
 	建议通过主键查询，建议通过unique约束的字段进行查询，效率是比较高的。
+### 如何设计user数据库
+    一些场景以及对应的商业上的用法
+    
+    如何设计user 和role数据库
+    user role group 这样的话一个用户可以同时有多个group 而且改的话也好改 比如你现在要增加一个role 给大多数满足条件的用户都加上这个role，你用户有2000000000你要一个一个去加吗？
+    你关联到group你就只需要把new role加到group就行了
+    
+    如何获得like 等数量大的信息
+    userlike和article多对多
+    如果用户有十万 article十万 10x10 中间表就会非常庞大
+    所以这个表不能实时查询，可以用cache缓存。比如你要like量，热度等信息 中间表很大由于 所以： 用一个固定的时间去更新这个信息，保持最终一致性。但更新后每次新来的我就把那个cache加1 同时也把这个数据存起来
 
 # 60 postgres
 # 61 docker.component.yml
@@ -1008,9 +1019,44 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
 
 ### 自定义简单查询
     findxxBy queryXXBy 可以加一And Or关键字  约定大于配置，你把名字按约定写好，参数按约定规定好，人家自定帮你写sql
+### 自定义复杂查询
+    加以下注解：@transiction（timout=10） 事务
+              @modifying： 涉及到修改和删除就加
+              @query（"updata User set username=?1where id=?1"）  这里到updagte后跟的是object 不是表名
+### 多表链接查询
+    @onetoone 
+    @joincolumn(name="cxc", referencecolumnname="id")
+    privat User user
+    上述例子中joincolomun中的name是指表中原本有个字段叫cxc 去用这个当外键查user中字段id和cxc值相等的那个user 放在我这儿
+
+### @Transient
+    如果你想在类中加入某个变量。使只不与表任何字段关联，只是想拿出来做计算 就用这个
+    怎么用
+    1 定义这个变量并加注释
+    2 写getxxx方法。里面就写上如何形成它
+
+### 事务
+    1 放在service 不然每个reposityory都有事务 会发生数据不一致的情况 因为如果在repostiory上加事务 service
+    对这个repository就会失去控制 
+    2 在本类调用事务失效 比如在service写一个updateBanlance方法 你在本类的某个方法中使用this.updateBanlance,事务会失效。所以一定要在外面调用 要让调用 通过 （go through）它。
+    意思是：事务就是给整个类加了事务外壳 你在里面搞 这个壳子用不上 要在壳外面搞 壳才会保护你 你他妈刀都放里面去了 穿防弹衣有m用
+    3 不要在private上加事务
 
 
 # 63 weather app
 ### 为什么创建自己的数据库，数据从api来不就行了？
     这种openapi一般都会有限制访问次数之类的，然后天气数据也不会更新很频繁，为了不让第三方server（openapi）影响我们的server，自己存数据
     
+# database migration： 正确数据库操作
+    为什么要
+    真正的开发的时候比如删除某个数据或table的时候很危险，弄错会毁了。自己本地毁了没事，你把坏数据库迁移到其他比如test环境去就会有问题
+
+    如何使用
+    1 implementation 'org.flywaydb:flyway-core'
+    2 ducoker compoennt: spring: flyway:enabled: true schemas: weather
+    3 启动项目
+
+    注意
+    不要手动子啊pdamin加table 不然会启动报错，
+    创建好后千万不要动flyway文件：哪怕格式都不行 因为底层用的是hash 你改一点点都会不一样 启动会报错
+
