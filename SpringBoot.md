@@ -30,8 +30,74 @@ Spring容器、日志、自动配置AutoCongfiguration、Starters，方便对外
 支持各种 IDE，如 IntelliJ IDEA 、NetBeans  
 -与tmocat的关系  
 它把tomcat直接内嵌了  以前弄完app要把代码部署到tomcat中（其实就是把各种文件放到固定的文件夹下） 现在就是sp直接给你把这些弄好了
+-约定大于配置
+就是默认给你弄了一堆配置。你按约定来，比如约定port要去ymal文件这样改springboot：port：5000。那你这样改完就会生效。比如约定你什么都不弄。默认一些配置就生效。
+你别乱动，这些东西默认就有。
+好处：在没有这个的时候，所有的东西，所有。我们需要去手动一个一个配。
+坏处：有的约定默认配置人家弄了你不知道
 
-# IOC和DI 控制反转和依赖注入
+# IOC AOP
+### 软件设计原则SOLID
+    SOLID（单一功能、开闭原则、里氏替换、接口隔离以及依赖反转）
+
+### IOC
+    控制反转。是对SOLID设计原则中的依赖倒置原则（高层模块不应该依赖于低层模块，它们都应该依赖于抽象；抽象不应该依赖于具体实现，具体实现应该依赖于抽象）的实现。
+    反转的是对资源对控制，以前你是地主（你的代码），自己份内对土地资源都归你自己管 你想怎么弄就怎么弄。现在土地被收了，统一归国家（spring）管。你只管负责种地（代码逻辑），土地人家给你那块你就用那块，你变成了要着吃的货色。
+    
+    这样做有什么好处呢？回到代码解释：
+    1。少操心：多一分权利多一分责任。资源（主要指你在程序中用到的各种object）控制权在你手里的时候你就多一分烦恼：用的时候去new 换的时候要修。现在资源控制权在第三方手里（spring框架），
+    你程序只要开个口子，等人给你提供资源你用就行了。不用再考虑资源的管理（sigle responsibilituy）
+    2。结偶，
+    3。提高可维护性：程序写好从此用铁盒锁好，资源有问题现在比如要更换了，直接接口上换个新usb就行了。代码里面它再也不打开在里面改了（保持内部稳定，打开老修不经意间总会影响其他代码）
+    4。资源被统一管理 效率提升
+    5 可测试性提升
+
+### DI 依赖注入
+    IOC毕竟是一个概念嘛 那具体如何实现呢？你总不能纸上谈兵把？ 用DI
+    eg：
+    传统：
+    public  Storre（）   {
+     item = new ItemImpl1();
+    }
+    DI
+    public  Storre（Item item）   {
+     this.item = item
+    }
+    上面的例子可以看出来，用di 资源不由你管理 你只管接收 用。
+
+# AOP
+    @Aspect:使用这个的class都被认为是切面
+    @pointcue：你的程序里的切点
+    @aspect程序里的入点
+
+     eg：
+     Implement rate limit for querying weather information
+      1. Add spring-aop
+      implementation 'org.springframework.boot:spring-boot-starter-aop'
+      2. Add @Aspect class and @EnableAspectJAutoProxy
+        @Aspect
+        @Component
+        @RequiredArgsConstructor
+        public class RateLimitAspect {..}
+
+        @EnableAspectJAutoProxy
+        @SpringBootApplication
+        public class WeatherAppApplication {..}
+      3. Create annotation interface
+      @Target(ElementType.METHOD)
+      @Retention(RetentionPolicy.RUNTIME)
+      public @interface RateLimit {
+      }
+      4. define a method that contains the logic of the
+      steps that need to be carried out when a method
+      call gets intercepted
+      public Object exceededLimit(ProceedingJoinPointjoinPoint) throws Throwable {..}
+      5. Pointcut expression:
+      Choose to use @Around annotation on our method with annotation interface
+      @Around(“@annotation(RateLimit)”)
+
+
+
 https://blog.csdn.net/L_GRAND_ORDER/article/details/112136702#:~:text=Spring%20IOC%20%28%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%29%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0,IOC%20%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%20%E5%9F%BA%E6%9C%AC%E7%90%86%E5%BF%B5%E5%B0%B1%E6%98%AF%E5%B0%86%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E6%9D%83%E4%BB%8E%E7%A8%8B%E5%BA%8F%E5%91%98%E6%89%8B%E4%B8%AD%E4%BA%A4%E7%BB%99%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%EF%BC%8C%E4%BB%8E%E8%80%8C%E9%81%BF%E5%85%8D%E4%BA%86%E5%9B%A0%E4%B8%BA%E7%94%A8%E6%88%B7%E4%B8%80%E4%B8%AA%E5%B0%8F%E9%9C%80%E6%B1%82%E7%9A%84%E5%8F%98%E5%8C%96%E4%BD%BF%E5%BE%97%E7%A8%8B%E5%BA%8F%E5%91%98%E9%9C%80%E8%A6%81%E6%94%B9%E5%8A%A8%E5%A4%A7%E9%87%8F%E4%BB%A3%E7%A0%81%E3%80%82%20%E6%A1%88%E4%BE%8B
 
 
@@ -244,9 +310,12 @@ eg: login.tip=请登录
 
 
 # 22 servelet和controller关系
+Servlet是JavaEE技术中的一种，用于处理客户端发起的HTTP请求，接收客户端发送的参数，并返回响应的服务器端程序。
+Controller是一种架构模式，它是MVC（Model-View-Controller）架构的核心部分，专门用于处理用户交互，接收用户输入，并将其转发给Model和View，最终将处理结果返回给用户。
+Servlet可以实现Controller的功能，因此Servlet也可以被看作是一种Controller。
 
--servlet是为了页面可以动态展示数据 通过doget  dopost方法实现相应，
-通过内嵌java代码实现动态展示
+-servlet是为了页面可以动态展示数据 通过doget  dopost方法实现相应， 通过内嵌java代码实现动态展示
+servlet和controller什么关系
 -controller是mvc里的东西，表面上看功能就是servelet，但是单独拿controler
 来说的的话它并没有做到网络层面的请求接受转发功能，可能只是实现了java代码
 那部分。mvc里请求接收相应是dispatchsevelt实现的，所以mvc里的servelet应该是
@@ -287,7 +356,10 @@ dispatchsevelt+controller
 因为spring'工厂你要东西的时候它就给你new好了 所以传的是对象
 -resource默认按名称找  找不到按类型
 eg：User cxc 此时会先去找和cxc同名的类 找不到 去按User找如果此时User接口被两个类实现了 就报错 解决方法是酱cxc换成其中一个实现的
--autowired 正好相反 默认按类型注入
+autowired 正好相反 默认按类型注入
+-resource是jdk里的 是java的东西 autowired是spring的 所以你想写更common的代码的话用resouurce
+
+
 -使用autowired值为null
 情况1：Bean对象并没有交给Spring管理
 检查@Autowired的对象是否已经被注入到Spring容器中了；
@@ -295,6 +367,9 @@ eg：User cxc 此时会先去找和cxc同名的类 找不到 去按User找如果
 情况2：对象使用过new关键字
 这是我遇到的情况，当一个对象使用过关键new时，它是不能被Spring所管理的。
 所以如果在这些对象中使用@Autowired去注入对象，得到的结果也是为null
+
+-autowired注入的类型如果有重复的怎么办：比如datasource 好几个bean都是这个类xing（mysql postgres。。。）
+用qualify消除歧义qualify（value="x"）   用： qualify（"x"）
 
 
 # 28 首页配置（想显示页面的初始化配置）
@@ -307,6 +382,23 @@ server.servlet.context-path=xxxx
 # 29 Bean使用
 -Bean的创建和使用
 https://blog.csdn.net/liuyueyi25/article/details/83244239
+### bean的初始化流程
+    资源定位：@componentscan：，
+    bean定义：将bean保存到beandefnition的实例中
+    发布bean定义： IOC容器装载bean
+    创建bean对象：实例化（你怕相应性能可以设置懒加载）
+    依赖注入： autowired
+### 作用域scope
+    使用
+    @Scope（WebApplicationContext。SCOPE——REQUEST）
+    singleton：单例
+    prototype：每次创建新的
+    session
+    
+
+和component的区别
+bean放在方法上，会把方法的返回值变成一个实例 一般和@configuration一起用（放在类上）
+component 会把class变成实例存起来
 
 # 30 controller接收请求参数的几种方法：@RequestParameter @RequestBody @pathvaiblaes @param（value="xx"）实体类 字符串
 @Requestbody和@RequestParameter
@@ -377,6 +469,7 @@ https://blog.csdn.net/qq_33840251/article/details/88774613
 @slf4j
 @RestControllerAdvice
 public class ControllerExpectionHandler{
+
 @ExpectionHandler(Exception.class)
 @ReasponseStatus(Httpstatus.INTERNAL_SERVER_ERROR)
 public ErrorResponse hanlerExecption(Exception exception){
@@ -1034,6 +1127,13 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
     怎么用
     1 定义这个变量并加注释
     2 写getxxx方法。里面就写上如何形成它
+### lazy懒加载
+    为什么有
+    a表1000条数据 b表100000条数据 a有b外建 a查一次原本扫描1000即可 现在好了 由于没条a有个b 查到这块的时候还得去b搜匹配外建的那条 总查询1000x100000次 但是你数据又不用 浪费。。。
+
+    @onetomany 默认lazy：查出来的东西很多 你有时候又不用 资源浪费 默认不查 用的时候再查
+    @mangytoone 默认eager 可以修改：@Manytoone (fetch=FetchType.LAZY)
+    @manytomany 默认lazy
 
 ### 事务
     1 放在service 不然每个reposityory都有事务 会发生数据不一致的情况 因为如果在repostiory上加事务 service
@@ -1060,3 +1160,65 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
     不要手动子啊pdamin加table 不然会启动报错，
     创建好后千万不要动flyway文件：哪怕格式都不行 因为底层用的是hash 你改一点点都会不一样 启动会报错
 
+
+# 64 后端分页pageable
+    repository
+    Page<Property> fundByUer_Id(Long userid,pageable pageable)
+    为什么返会page而不是list呢？ page多了两个方法前端展示可能能用到： getTotalElement getTotalPages
+    
+    service
+    Pageable paging = PageRequest(page, size)
+    Page<Property> propoties = propertyRepository.fundByUer_Id(Long userid,pageable pageable)
+    List<Proteties> properityList = propertis.getContent()
+
+    PropertyPageDto
+    、
+
+# 65 Spring security
+    流程
+    请求会先来到filterchain 👇下面会写相关的文件 里面就是一层层的filter 走完才到controller
+
+    意义：
+    1。让程序员专注于代码逻辑 验证安全这一块集中在secutiy弄 意味着能进controller的都是安全的
+    例子：login这些验证为什么要用security写，自己去数据库查，一样放行不就行了？
+    有时候诸如login的验证不光会验证密码 还会验证你是否身份有效之类的 当然我们可以自己去写。多写几个字段。那样你的程序扩展和维护性就很差。你login的逻辑就会穿插很多安全相关
+    的代码。哦耦合度高。所以才有了security 它帮你把这些与login无关的验证放在前面，后面不管你是想添加验证还是修改啥的都会方便很多 你login的代码就不用动了
+    2 由于约定大于配置，spring security事先已经帮你加了7 8 层security
+
+
+    添加依赖
+    compile "org.springframework.boot:spring-boot-starter-security"
+
+    写Securityconfiguration文件：文件
+    @EnableWebSecurity
+    public class securtiyConfiguration{
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+        .csrf().disable()  //csrf攻击是什么，举例说明 CSRF（Cross-site request forgery）跨站请求伪造，是一种恶意攻击，它利用用户已有的身份验证凭证，以用户的名义发送恶意请求。
+                            例如：用户A已登录了某个网站，此时，攻击者发送一封恶意邮件给用户A，邮件中含有一个网址，当用户A点击此链接时，攻击者就可以以用户A的名义发送恶意请求，这就是一个CSRF攻击。
+        .authorizeRequests()
+        .antMatchers( "/**").permitAll()
+        .anyRequest().authenticated()
+        .and().build();
+        }bran
+    }
+
+    密码明文处理: 用BCrpt spring已经有对应方法了
+    写Securityconfiguration文件：
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCrptPasswordEncoder()
+    }
+
+    注册
+    service文件中的create user  ：
+    。。。。
+    public final PasswordEncoder passwordEncoder;
+    public void createUser(UserPostDto userpostdto){
+        userPostDto.setPassword(passwordEncoder.encod(usepostDto.getPassword())）
+        userPostDto.save(userMapper.mapUserPostDtoToUser(userpostdto)
+    }
+    
+    密码验证
+    passwordEncoder。match（userPostDto.getPassword(),数据库查的password）
