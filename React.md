@@ -20,6 +20,8 @@
                         3 编写if else会带来一定的计算开销，会影响程序的执行效率；
                         4 if else会降低程序的可读性，不利于代码的复用；
                         5 if else一次只能处理两个分支 不如人家switch这些
+    reuseable： propType
+                propType是如何有益于代码的reuseable的？propType提供一种方式来检测传入组件的props参数是否正确，并且可以在传入参数不正确时抛出警告。它能够有效地帮助开发人员在使用和重用组件时及时发现错误，避免出现不必要的bug，从而提升代码的可重用性。
 # 1 为什么学react
     1. 原生js操作dom效率低 老重排重绘  
     2. 原生js没有组件化编码（就是把html js css都按功能拆分）
@@ -726,7 +728,7 @@
 
 # 46 ReactRouter 6
 ### 对比上面的5有什么变化
-    1. 用routes替换了switch,且必须写上！之前switch可以省略
+    1. 用routes替换了switch 之前switch可以省略
     2. 用element替换了component，并且用花括号包住component：element={<About/>}
     3. 用navigate替换了redirect，<Route path="/" element={<Navigate to="xxx"/>}/> navigage就是渲染到组件视图就切换 说白了只要匹配上了不用用户点就能自动切换页面
     4. route中加入了casesensitive 大小写敏感
@@ -781,7 +783,18 @@
     
     怎么用
     1 创建context容器对象
-    const XxxContext = React.createContext() 注意首字母大写，并放在所有组件都能访问的地方
+    const XxxContext = React.createContext() 注意首字母大写，并放在所有组件都能访问的地方 
+    问：react中的createContext()的圆括号()中的参数是什么
+    答：CreateContext()的参数是一个JavaScript对象，它用于定义上下文的初始值。详细解释并举例如下：
+    createContext() 函数接受一个可选的初始值，它可以用于在上下文树中的消费者组件中提供一些默认值，比如：
+
+    const MyContext = React.createContext({
+    name: 'Default Name',
+    age: 0
+    });
+
+    在使用时，如果没有提供 Provider，消费者组件将会接收上面的默认值
+    作为上下文的初始值
     2 用<XxxContext.provider></>包裹子组件、
     3 通过value把想传的值放进去：
         放字符串：<XxxContext.provider value={变量名}></>包裹子组件
@@ -819,7 +832,7 @@
     };
 
     怎么用
-    1 写一个action：const myReducer = (initialDate: any, action: any) => {
+    1 写一个reducer：const myReducer = (initialDate: any, action: any) => {
                         switch(action.type) {
                             case 'add'
                                 return initialData+action.number
@@ -832,7 +845,7 @@
     2 创建reducer： const [num, dispatch] = useReducer(myReducer, 0)
     3 用： <div>   {num}   <button onClick={()=>{ dispatch({type:add, number: 22})  }}></div>
 
-# webstorage
+# 52 webstorage
     cookie session复习：
     cookie生命周期是多久
     cookie的生命周期取决于它的失效时间，如果没有设定失效时间，那么cookie就会在当前会话结束时过期，也就是浏览器关闭的时候结束。session生命周期通常为一个会话，也就是说，当用户关闭浏览器或关掉网页时，session会话就会被终止，session里的数据也就被清空。这么说session和cookie的生命周期一样？这仅仅是相似之处，session的生命周期是从用户登录到登出，而cookie在用户关闭浏览器或关掉网页后就会被销毁。举例来说，如果用户访问某个网站，那么在这个网站上cookie的存在会持续到用户关闭浏览器，而session则会在用户登出后销毁。session是服务器端开辟的内存还是浏览器开辟的内存？
@@ -850,3 +863,40 @@
     取
     const data = JSON.parse(locastorage.getItem("Notes"))
     注意神坑：：：useeffect有顺序！！！！！！！！！！！！！！！！！！！！！！所以把取的那个effect放在set的前面 不然存空值
+
+
+# 53 classnmae/bind
+    导入
+    import classNames from 'calssnames/bind';
+    import styles from './Item.module.css'
+
+    const cx = classNames.bind(styles)
+    <div className={cx('item',{isHightLight,})}></div>这段代码是什么意思 详细解释并举例说明
+
+    这段代码是使用`classnames`库来实现动态类名的语法糖，用来替代多个条件判断来添加类名的写法。其中的`isHightLight`变量的值决定了最终渲染的类名是否包含`isHighLight`，如果`isHightLight`是`true`，最终渲染的类名会包含`isHighLight`，反之不包含。
+    
+    举个例子：
+    
+    let isHightLight = true
+    
+    <div className={cx('item',{isHightLight,})}></div>
+    
+    // 最终渲染的类名为：item isHighLight
+    ```css中如何识别这个类名
+    
+    CSS中可以通过`.item.isHighLight` 来识别这个类名，这样就可以对指定的元素进行样式设置。.item.isHighLight是什么意思？
+    
+    `.item.isHighLight`是一种CSS选择器，表示只有拥有同时包含`item`和`isHighLight`两个类名的元素才会被选择出来，只要满足这两个类名，就可以对元素进行相应的样式设置。
+
+
+# 54 react哲学 以后写react就按这个来
+    1 划分组件层级
+    2 静态版本
+    3 状态的最小展示： React的状态最小展示原则（State Minimization Principle）是指在React组件中，只保存必要的状态，而不是所有的状态。状态最小化可以帮助组件变得更易于理解和维护，可以减少潜在的错误和复杂性。
+    4 状态的正确位置：React的状态应该保存在组件本身的state属性中，而不是在全局对象或者其他地方，这样可以使得状态保持组件私有，让组件不仅更容易管理，而且更容易维护和测试。
+    5 回调函数： react哲学中的回调函数需要注意什么
+        1. 尽量保持回调函数的简洁，减少代码量，提高可读性。
+        2. 尽量使用迭代器（Iterators）或者箭头函数，以提高代码的可读性和可维护性。
+        3. 不要在回调函数中使用过多的参数，以避免参数不一致的情况。
+        4. 如果回调函数包含复杂的业务逻辑，则将其封装到函数中，以便重用。
+

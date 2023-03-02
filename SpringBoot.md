@@ -106,7 +106,7 @@ https://blog.csdn.net/L_GRAND_ORDER/article/details/112136702#:~:text=Spring%20I
 -相当于xml 它的替代 是一个java类
 -可以创建类 放入到spring中
 -用两个注解：
-@Configuration 放在文件上面 意思是这个类是config 
+@Configuration 放在文件上面 意思是这个类是config 为什么配置类必须要用configuration呢？ 因为这个东西其实就是application.yml里面的东西，只是这个配置中有逻辑代码要写 比如拦截器 你如何拦截 拦截谁？这都是只有在class里用java才能写的东西 你写完后把它当作configuraion注入在了bean而已 
 @Bean(name = "") 创建方法   返回值是对象 方法上用@bean 意思是把返回值对象注入到容器中 其中的name就是id 必须和类名一样
  -使用注解比xml文件方便
 Application ctx = new AnnotationConfigApplicationContext(xxx.class)
@@ -124,8 +124,10 @@ XXX xxx = ctx.getbean("xxx")
 -与value连用 
 -首先要明白spring框架有ioc  所有对象由工厂创建   这里的vo里的类上都有component注解 就是说允许创建对象  这里的PropertyResource就是规定工厂在创建对象的过程中去PropertyResource后面规定的配置文件中找相应的值  componentsacn就是一顿扫描 把需要创对象的都扫出来
 @value：
+
 不逼酱  你用application 但是是properties   就得手动用value一个个弄：eg：@Value("${person.name}") 从配置文件取值    @Value("#{11*2}") spring表达式   @Value("true") 字面量
 @configurationpropeties   
+
 -不逼酱 用官方指定的配置文件 弄好后可以用yaml牛逼的地方 就是这个方法：属性绑定 不需要你一个个value赋值
 -作用是将配置文件中配置的每一个属性的值映射到这个组件中 将对应的属性绑定 只有这个组件是容器中的组件才能用这个功能（@component：把普通pojo实例化到spring容器中，相当于配置文件中的<bean id="" class=""/>）； 
 - @ConfigurationProperties最适用于所有具有相同前缀的分层属
@@ -317,9 +319,7 @@ Servlet可以实现Controller的功能，因此Servlet也可以被看作是一�
 -servlet是为了页面可以动态展示数据 通过doget  dopost方法实现相应， 通过内嵌java代码实现动态展示
 servlet和controller什么关系
 -controller是mvc里的东西，表面上看功能就是servelet，但是单独拿controler
-来说的的话它并没有做到网络层面的请求接受转发功能，可能只是实现了java代码
-那部分。mvc里请求接收相应是dispatchsevelt实现的，所以mvc里的servelet应该是
-dispatchsevelt+controller
+来说的的话它并没有做到网络层面的请求接受转发功能，spring框架中sevelt容器和spring容器是两个独立的部分，一起跑在web容器中（tomcat），请求会先到servelt 然后被servlet发到spring的dispatchservlet，然后才到controller
 
 
 # 23 JSP和servelet的区别
@@ -702,7 +702,7 @@ return student
 第一种方法
 -@Resource private xxxService xxx
 第二种方法
-@@RequiredArgsConstructor
+@@RequiredArgsConstructor： 用这个的好处是可以在运行前检查出潜在的循环依赖问题
 1.必须声明的变量为final
 ​ 2.根据构造器注入的，相当于当容器调用带有一组参数的类构造函数时，基于构造函数的 DI 就完成了，其中每个参数代表一个对其他类的依赖。基于构造方法为属性赋值，容器通过调用类的构造方法将其进行依赖注入
 ### 8 写appplication,properties文件 配置数据库的连接信息
@@ -1186,32 +1186,42 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
     2 由于约定大于配置，spring security事先已经帮你加了7 8 层security
 
 
-    添加依赖
+    怎么用
+    1. 添加依赖
     compile "org.springframework.boot:spring-boot-starter-security"
-
-    写Securityconfiguration文件：文件
+    2. 写Securityconfiguration文件：文件
     @EnableWebSecurity
+    @Setter   是为下面的环境变量赋值而写的
+    @Configuration
+    @ConfigurationProperrties（prefix="management.endpoints.web.cors"） 比如下面的allowedOrigins在不同环境科恩跟不一样 所以把这中变的东西放在外部的配置文件中。结偶。
     public class securtiyConfiguration{
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
         .csrf().disable()  //csrf攻击是什么，举例说明 CSRF（Cross-site request forgery）跨站请求伪造，是一种恶意攻击，它利用用户已有的身份验证凭证，以用户的名义发送恶意请求。
                             例如：用户A已登录了某个网站，此时，攻击者发送一封恶意邮件给用户A，邮件中含有一个网址，当用户A点击此链接时，攻击者就可以以用户A的名义发送恶意请求，这就是一个CSRF攻击。
+        .cors().configrationSource(request -> { CORS（跨源资源共享）是Spring Security中的一个特性，它允许来自不同源的资源（如JavaScript、图像等）在Web浏览器中进行跨源请求。如果不使用CORS，浏览器将不允许发送任何跨域请求，但攻击者仍然可以发起这样的请求，而不受任何限制。
+            var cors = new corsConfigratino(allowedOrigins);
+            cors.setAllowedMethods(allowedOrigins);
+            cors.setAllOrigins(allowedOrigins)
+            cors.setAllowedHeaders(allowedOrigins);
+            cors.setExposeHealder(allowOrigins)
+            return cors;
+        })
+        .addFilter(filer)
         .authorizeRequests()
         .antMatchers( "/**").permitAll()
         .anyRequest().authenticated()
         .and().build();
         }bran
     }
-
-    密码明文处理: 用BCrpt spring已经有对应方法了
+    3. 密码明文处理: 用BCrpt spring已经有对应方法了
     写Securityconfiguration文件：
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCrptPasswordEncoder()
     }
-
-    注册
+    4. 注册
     service文件中的create user  ：
     。。。。
     public final PasswordEncoder passwordEncoder;
@@ -1219,6 +1229,121 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
         userPostDto.setPassword(passwordEncoder.encod(usepostDto.getPassword())）
         userPostDto.save(userMapper.mapUserPostDtoToUser(userpostdto)
     }
-    
-    密码验证
+    5. 密码验证
     passwordEncoder。match（userPostDto.getPassword(),数据库查的password）
+
+
+    日常要掌握的一些security的一些东西
+    1 Role-base access control: 可以在user和role之间加一个group
+    2 https和http的区别 post的body'参数https会加密
+    3 aviod sql injection
+    4 no plain text for any password
+    三大Authorisation方案：
+    5 web登录状态保存：用户名密码鉴权；鉴权结果的保存在server的session里。session一般就是在服务端实例的memory里 即一个server一个session。如果有多个server的话会有风险：你的请求分发被load banlance管。请求不一定会到存了session的那台server。解决方案一般是在load banlance和多个server之间加一个shared redis 解决方案二是请求携带token,这样reids那一层就不需要了
+    6 第三方API使用：Oauth鉴权，就是我们常见的那些用微信登录之类的 好处是不需要注册用户名密码 客户流失率小 。流程是client先去验证服务器验证，拿token 。然后带着token去访问资源
+    7 安全信息传递 token鉴权： jwt。好处是你可以在里面加任何字段 比如过期时间 role这些 token是被加密的 一般放在header里面 可以安全传递。
+    8 认证Authentication：
+        怎么用
+        (1)自己写一个filter然后把它add到filterchain里面 extends UsernamePasswordAuthenticationFilter{ //这里选择继承UsernamePasswordAuthenticationFilter的原因是这个filter里已经配置好了一些东西 它默认filter login路径来的POST请求  
+            @override
+            @SneakyThrows
+            public Authentication attemptAuthentication(Request request, Response reponse) Throw AuthenticationExceprion{
+                LoginRequest loginrequest = new ObjectMapper(request.getInputStream, LoginRequest.class); LoginRequest是自己写类就一个username和password属性 getter setter方法。objecetmapper用于把json字符串变成对应的objecet
+                UserAuthenticationToken userAuthenticationToken = new UserAuthenticationToken(loginrequest.getUsername(),loginreqeust.getPassword())
+                return AuthenticaitonManager.authenticate(userAuthenticationToken)
+            }
+            successfulAuthentication
+            unsuccessfulAuthentication
+         }
+        (2)自己写一个ApplicationUserDetailService implemetnes UserDetaileService{
+            private final UerRepository userreposity;
+            @Override
+            public UserDetails loadUserByUsername(string email) throw UsernameNotFoundException{
+                 UserInfo userinfo = userRepository.findByEmail(emil).onElseThrow(()->new ResourceNotFoundException("User"+ emial)); 这里注意比较tricke的一点是 你的user entiry类最好改个名字 因为spring secruity里面已经有了一个user了 你放在前面接收会自动被认为是人家定义好的那个user
+                 return new User(email, userinfo.getPassword(), Collotion.emptyList())
+            }
+        }
+        （3）在SecurityConfiguration里面写public AuthenticationManager authenticationManager(){
+            DaoAutheticationProvider daoAutheticationProvider = new DaoAutheticationProvider();
+            daoAutheticationProvider.setUserDetailService(ApplicationUserDetailService)
+            daoAutheticationProvider.setPasswordEncoder(passwordEncoder)
+            return  new ProviderManager(daoAutheticationProvider)
+         }
+
+        流程
+        1 UsernamePasswordAuthenticationFilter拿到用户名和密码 把它打包成一个token（Authentication类，里面有很多方法，比如isAuthtication 刚打包完是false 需要验证）
+        2 token被传给前台（AuthenticationManager 已存在）
+        3 token被传给公安局（Authenticationoprovider，已存在）
+        4 token被传给UserDetailService（可以理解为library）
+        注意
+        paswordEncoder可以放在securityconfiguration外面生成 如果userdetailserveice那儿你用了userService，userservice里有用了passwordEncoder 就会产生循环依赖详细见steven 2023年2月24日视频
+    9 如何在某个方法上加security？
+        一般放在controller和service 推荐能在controller做就做 两个都做可能会打架。另外repository一般没人做 除非你的rep是调用第三方API 有特殊需求
+        方法一：方法上加@PreAuthorize（"hasAuthority("ADMIN")"）
+        方法二：@Secured（"ADMIN"）
+
+    扩展知识
+    用户访问系统的两种方式：
+    1 只调用Api：带token即可
+    2 有UI界面 通过SSO系统进行访问控制
+    SSO：单点登录
+    所有的用户认证都在这个系统进行。不然你的系统有很多个 你还需要让用户记录好几个用户名和密码吗
+
+
+# 66 Docker
+    干嘛的
+    容器。主要用来消除：在我的环境上能运行的问题。
+
+    为什么用
+    1 多环境都可以打包成一个镜像
+    2 不浪费资源（对比虚拟机来说）
+    3 各个环境隔离 互不影响
+
+    docker和虚拟机区别
+    docker是操作系统之上的一个应用 占用资源少 用于将代码和依赖打包在一起 多容器共享系统内核
+    虚拟机就是物理层的抽象 其中包括了一套完整的操作系统
+
+    镜像
+    程序运行的只读版本。就是个程序的snapshot 其中包含了项目启动要求的所有依赖和配置
+
+    container
+    从镜像创建的运行实例，可以运行 开始 停止 删除
+
+    volumes
+    数据 添加好后即使你container删除数据也还在
+
+
+    用docker打包程序
+    为什么： 因为一同连环境都打包了 不然像以前你把程序打成jar包 还得去运行的server上配环境 用docker打包生成一个镜像 你只需把镜像放在可以运行docker的地方即可
+
+    怎么用
+    gradle.builde下 弄出来个jar包
+    项目下创建Dockerfile:
+        # syntax=docker/dockerfile:experimental
+            FROM openjdk:11 AS build
+            WORKDIR /workspace/app
+            
+            COPY . /workspace/app
+            #RUN --mount=type=cache,target=/root/.gradle ./gradlew clean build
+            RUN ./gradlew clean build
+            
+            RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/*.jar)
+            
+            FROM openjdk:11
+            VOLUME /tmp
+            ARG DEPENDENCY=/workspace/app/build/dependency
+            COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+            COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+            COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+            COPY --from=build /workspace/app/scripts/start.sh /app
+            RUN chmod +x /app/start.sh
+            ENTRYPOINT ["sh", "-c", "/app/start.sh"]
+    启动docker trminal运行：docker build -t 项目名 然后你去docker桌面的image就能看到新的image
+    启动程序imagae对应的container： docker run -p 8080:8080 项目名
+
+
+# 67 perfomance
+    减少访问数据库次数
+    小心使用findall 使用分页
+    避免使用嵌套循环
+    
