@@ -777,6 +777,61 @@
     1 看这个东西你是否需要复用
     2 这部分未来会变，抽出来，方便维护
 
+# 52 webstorage
+    cookie session复习：
+    cookie生命周期是多久
+    cookie的生命周期取决于它的失效时间，如果没有设定失效时间，那么cookie就会在当前会话结束时过期，也就是浏览器关闭的时候结束。session生命周期通常为一个会话，也就是说，当用户关闭浏览器或关掉网页时，session会话就会被终止，session里的数据也就被清空。这么说session和cookie的生命周期一样？这仅仅是相似之处，session的生命周期是从用户登录到登出，而cookie在用户关闭浏览器或关掉网页后就会被销毁。举例来说，如果用户访问某个网站，那么在这个网站上cookie的存在会持续到用户关闭浏览器，而session则会在用户登出后销毁。session是服务器端开辟的内存还是浏览器开辟的内存？
+
+	session是由服务器端开辟的内存，它会将session信息存储在服务器上，每个客户端都会有一个唯一的session ID来标识，浏览器会将这个session ID通过cookie的方式发送给服务器，服务器根据这个session ID来找到对应的session信息。
+
+    内存多大
+    cookie: 4kb: 一次会话
+    sessionStorage: 5mb 登录登出
+    localstorage：5mb 永久，直到用户手动清理缓存。 数据不能被爬虫抓
+
+    怎么用localstorage
+    存
+    localstorage.setItem("Notes",JSON.stringify(notes))
+    取
+    const data = JSON.parse(locastorage.getItem("Notes"))
+    注意神坑：：：useeffect有顺序！！！！！！！！！！！！！！！！！！！！！！所以把取的那个effect放在set的前面 不然存空值
+
+
+# 53 classnmae/bind
+    导入
+    import classNames from 'calssnames/bind';
+    import styles from './Item.module.css'
+
+    const cx = classNames.bind(styles)
+    <div className={cx('item',{isHightLight,})}></div>这段代码是什么意思 详细解释并举例说明
+
+    这段代码是使用`classnames`库来实现动态类名的语法糖，用来替代多个条件判断来添加类名的写法。其中的`isHightLight`变量的值决定了最终渲染的类名是否包含`isHighLight`，如果`isHightLight`是`true`，最终渲染的类名会包含`isHighLight`，反之不包含。
+    
+    举个例子：
+    
+    let isHightLight = true
+    
+    <div className={cx('item',{isHightLight,})}></div>
+    
+    // 最终渲染的类名为：item isHighLight
+    ```css中如何识别这个类名
+    
+    CSS中可以通过`.item.isHighLight` 来识别这个类名，这样就可以对指定的元素进行样式设置。.item.isHighLight是什么意思？
+    
+    `.item.isHighLight`是一种CSS选择器，表示只有拥有同时包含`item`和`isHighLight`两个类名的元素才会被选择出来，只要满足这两个类名，就可以对元素进行相应的样式设置。
+
+
+# 54 react哲学 以后写react就按这个来
+    1 划分组件层级
+    2 静态版本
+    3 状态的最小展示： React的状态最小展示原则（State Minimization Principle）是指在React组件中，只保存必要的状态，而不是所有的状态。状态最小化可以帮助组件变得更易于理解和维护，可以减少潜在的错误和复杂性。
+    4 状态的正确位置：React的状态应该保存在组件本身的state属性中，而不是在全局对象或者其他地方，这样可以使得状态保持组件私有，让组件不仅更容易管理，而且更容易维护和测试。
+    5 回调函数： react哲学中的回调函数需要注意什么
+        1. 尽量保持回调函数的简洁，减少代码量，提高可读性。
+        2. 尽量使用迭代器（Iterators）或者箭头函数，以提高代码的可读性和可维护性。
+        3. 不要在回调函数中使用过多的参数，以避免参数不一致的情况。
+        4. 如果回调函数包含复杂的业务逻辑，则将其封装到函数中，以便重用。
+
 # 50 context
     是啥
     一种组件间通信方式。特别实用于祖组件和后代组件间的通信，父子间可以直接用props传递，所以可以不用这个 
@@ -842,61 +897,68 @@
                                 return initialData
                         }
                     }
-    2 创建reducer： const [num, dispatch] = useReducer(myReducer, 0)
+    2 创建reducer： const [num, dispatch] = useReducer(myReducer, 0) //myReducer：这是一个reducer函数，它接收两个参数，一个是当前的状态state，一个是要处理的action，并返回一个新的state。 0：这是一个初始化状态，它用于指定在第一次调用reducer时，state的初始值。
     3 用： <div>   {num}   <button onClick={()=>{ dispatch({type:add, number: 22})  }}></div>
 
-# 52 webstorage
-    cookie session复习：
-    cookie生命周期是多久
-    cookie的生命周期取决于它的失效时间，如果没有设定失效时间，那么cookie就会在当前会话结束时过期，也就是浏览器关闭的时候结束。session生命周期通常为一个会话，也就是说，当用户关闭浏览器或关掉网页时，session会话就会被终止，session里的数据也就被清空。这么说session和cookie的生命周期一样？这仅仅是相似之处，session的生命周期是从用户登录到登出，而cookie在用户关闭浏览器或关掉网页后就会被销毁。举例来说，如果用户访问某个网站，那么在这个网站上cookie的存在会持续到用户关闭浏览器，而session则会在用户登出后销毁。session是服务器端开辟的内存还是浏览器开辟的内存？
+# 55 redux
+    干嘛的
+    和usecontext一样 做状态管理的
 
-	session是由服务器端开辟的内存，它会将session信息存储在服务器上，每个客户端都会有一个唯一的session ID来标识，浏览器会将这个session ID通过cookie的方式发送给服务器，服务器根据这个session ID来找到对应的session信息。
+    怎么用
+    1 导包： yarn install @reduxjs/toolkit react-redux
+    2 建一个store包 里面包含两种文件 
+            一：一个index。js目的是创建store：
+            import {configureStore} from '@reduxjs/toolkit'
+            import postsReducer from './postsSlice';
 
-    内存多大
-    cookie: 4kb: 一次会话
-    sessionStorage: 5mb 登录登出
-    localstorage：5mb 永久，直到用户手动清理缓存。 数据不能被爬虫抓
+            const rootReducer = {
+                posts: postsReducer
+            }
+            export const store = configureStore({
+                    reducer: rootReducer
+            })
 
-    怎么用localstorage
-    存
-    localstorage.setItem("Notes",JSON.stringify(notes))
-    取
-    const data = JSON.parse(locastorage.getItem("Notes"))
-    注意神坑：：：useeffect有顺序！！！！！！！！！！！！！！！！！！！！！！所以把取的那个effect放在set的前面 不然存空值
+            二：所有的slice（相当于useContext(xx)的那个人xx）也都放在这个包下
+            import {createlist} from '@reduxjs/toolkit'
 
+            const initialState = [
+                {id:1, title:'xxx',body:'xxx'},
+                {id:2, title:'xxx',body:'xxx'}
+            ]
 
-# 53 classnmae/bind
-    导入
-    import classNames from 'calssnames/bind';
-    import styles from './Item.module.css'
+            const postSlice = createSlice({
+                name: 'ff',
+                initialState,
+                reducers: {
+                    addpost:(state,action)=>{
+                        const{title,body} = action.payload;
+                        const id = state.length+1;
+                        state.push({id,title,body})
+                    }
+                }
+            })
+            export const {addPost,deletePost} = postsSclice.actions;
+            export default postSlice.reducer;
+    3 把上面的东西导入到index里面 把app包起来 这样app下的所有的都就能用了
+            import {Provider} from "react-redux"
+            import store from "./store"
+            import App from "./App"
+            
+                .....
+            <Provider store={store}>
+                <App/>
+            </Provider>
+    4 在要使用的类里导入
+            import React form 'react'
+            import {useSelector,useDispatch} from 'react-redux'
+            import {deletePost} from '../store/postsSlice'
 
-    const cx = classNames.bind(styles)
-    <div className={cx('item',{isHightLight,})}></div>这段代码是什么意思 详细解释并举例说明
+            const PostList=()=>{
+                const posts = useSeclector(state=>state.posts) // useSelector拿到的是状态
+                const dispatch = useDispatch()  //这个和useContext里的dispatch一样 入参是一个action 
 
-    这段代码是使用`classnames`库来实现动态类名的语法糖，用来替代多个条件判断来添加类名的写法。其中的`isHightLight`变量的值决定了最终渲染的类名是否包含`isHighLight`，如果`isHightLight`是`true`，最终渲染的类名会包含`isHighLight`，反之不包含。
-    
-    举个例子：
-    
-    let isHightLight = true
-    
-    <div className={cx('item',{isHightLight,})}></div>
-    
-    // 最终渲染的类名为：item isHighLight
-    ```css中如何识别这个类名
-    
-    CSS中可以通过`.item.isHighLight` 来识别这个类名，这样就可以对指定的元素进行样式设置。.item.isHighLight是什么意思？
-    
-    `.item.isHighLight`是一种CSS选择器，表示只有拥有同时包含`item`和`isHighLight`两个类名的元素才会被选择出来，只要满足这两个类名，就可以对元素进行相应的样式设置。
-
-
-# 54 react哲学 以后写react就按这个来
-    1 划分组件层级
-    2 静态版本
-    3 状态的最小展示： React的状态最小展示原则（State Minimization Principle）是指在React组件中，只保存必要的状态，而不是所有的状态。状态最小化可以帮助组件变得更易于理解和维护，可以减少潜在的错误和复杂性。
-    4 状态的正确位置：React的状态应该保存在组件本身的state属性中，而不是在全局对象或者其他地方，这样可以使得状态保持组件私有，让组件不仅更容易管理，而且更容易维护和测试。
-    5 回调函数： react哲学中的回调函数需要注意什么
-        1. 尽量保持回调函数的简洁，减少代码量，提高可读性。
-        2. 尽量使用迭代器（Iterators）或者箭头函数，以提高代码的可读性和可维护性。
-        3. 不要在回调函数中使用过多的参数，以避免参数不一致的情况。
-        4. 如果回调函数包含复杂的业务逻辑，则将其封装到函数中，以便重用。
-
+                const handleDelete = ()=>{
+                    dispatch(deletePsot(post.id)) //dispatch函数用来将deletePost发送给reducer，以便reducer处理action。 这里的dispatch和useReducer为何不一样 useReduce为何拿来主义就能用 因为useReduver里的dispatch是通过useReducer(myReducer, 0)建好的 所以直接调用 直接去这个reducer里面处理action
+                                                    而这里dispatch先传入deletePost的原因是告诉你去哪个reducer里执行action action就是你传入的那个参数 其实一样。 只不过useReduver在用的时候就定义好了目的地而已 redux是先告诉目的地 再告诉action
+                }
+            }
