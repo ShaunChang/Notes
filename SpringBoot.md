@@ -400,6 +400,10 @@ https://blog.csdn.net/liuyueyi25/article/details/83244239
 bean放在方法上，会把方法的返回值变成一个实例 一般和@configuration一起用（放在类上）
 component 会把class变成实例存起来
 
+为什么要用bean呢？
+你想 你要用一个实体 但是某个实体比如passwordEncoder这么复杂的东西你没法自己写 人家已经写好了 但是人家的哪个类里肯定没有conpomennt 你总不能去动源代码吧？ 一个可行的方式是你先new出来 你再吧这个实体抛出去变成bean 其实和component
+做的一样的工作 只是说这种情况下你想共享某个instance 你只有通过bean
+
 # 30 controller接收请求参数的几种方法：@RequestParameter @RequestBody @pathvaiblaes @param（value="xx"）实体类 字符串
 @Requestbody和@RequestParameter
 Requestbody意思是取出post请求body中的数据 在变量前用这个意思是要把这个封装到指定的对象里
@@ -844,9 +848,11 @@ post请求：mockmvc.perform(MockMvcRequestBuilders.post("url").content(asJsonSt
 .andExpect(content().string("xxx"))}
 .andExpect(jsonPath("$.id").value("xxx"))   就是测响应的json里具体某个属性的值
 ```
-小坑：applciation starter failed ：找不到。。dao 原因是没有把所有要的类扫描 记住这是一个“干净”的环境   
+小坑一：applciation starter failed ：找不到。。dao 原因是没有把所有要的类扫描 记住这是一个“干净”的环境   
 解决方法一：@WebMvcTest({IndexController.class,UserDao.class}) .  
-解决方法二：
+解决方法二：.put("/articles"+id)这里的id为什么一定要用拼接的写法
+使用拼接的写法可以让服务器端能够准确的识别出请求的资源，从而可以做出准确的响应。为什么不能这样写.put("/articles/5")，因为服务器端无法准确的识别出请求的资源，如果有传入参数，服务器端无法识别出这个参数是什么，也就无法作出准确的响应。
+小坑二：
 ```java
 @ComponentScan(basePackages = {"com.tobacco.casemanagement"})
 class IndexControllerTest {
@@ -1183,10 +1189,11 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
     请求会先来到filterchain 👇下面会写相关的文件 里面就是一层层的filter 走完才到controller
 
     意义：
-    1。让程序员专注于代码逻辑 验证安全这一块集中在secutiy弄 意味着能进controller的都是安全的
+    1。让程序员专注于代码逻辑 验证安全这一块集中在secutiy弄
     例子：login这些验证为什么要用security写，自己去数据库查，一样放行不就行了？
     有时候诸如login的验证不光会验证密码 还会验证你是否身份有效之类的 当然我们可以自己去写。多写几个字段。那样你的程序扩展和维护性就很差。你login的逻辑就会穿插很多安全相关
     的代码。哦耦合度高。所以才有了security 它帮你把这些与login无关的验证放在前面，后面不管你是想添加验证还是修改啥的都会方便很多 你login的代码就不用动了
+    例子：你刚去公司 不懂公司鉴权和验证等逻辑 如果没有security 你写相关controlle是不是需要考虑这些？你有得去学 开发成本高 
     2 由于约定大于配置，spring security事先已经帮你加了7 8 层security
 
 
@@ -1345,9 +1352,37 @@ public List<PropertyGetDto> findPropertyByUserId(Long userId){
     启动docker trminal运行：docker build -t 项目名 然后你去docker桌面的image就能看到新的image
     启动程序imagae对应的container： docker run -p 8080:8080 项目名
 
-
 # 67 perfomance
     减少访问数据库次数
     小心使用findall 使用分页
     避免使用嵌套循环
-    
+
+# steven代码reviewfeedback
+    1 不需要authority接口 因为相关信息已经被放在jwt的token信息里了。你再一个，autority这类隐私信息不允许被别人随便调去看
+    2 @Transitional注解在读的时候一般不用 在以下场景可以使用： 同时修改多个表 a表修完b表没来得改程序挂了 就会出现数据不一致的情况 举例：银行系统
+    3 email由于设置为unique 所以save方法有可能也会抛异常 可以try catch save一下 这样一来 单独的判断email是否存在的方法也不需要了 少查一次库
+    4 把passwoedEncoder放在securityConfig外面以避免循环依赖
+    5 GetMappint("/pages") pages 要删除，它不是一个资源路径 应该用？形式带参 
+    6 articlePostDto 里不应该有author id，应该去jwt拿 一是因为放在dto里就意味着用户可以随意改这个值 不安全 二是因为代码冗余 应该去jwt拿
+    7 article 的put和post api设计前应该加： users/{userId}/articles 这样就可以实现鉴权 不然你这个是public的 get还好 put和post不可以谁都改 一：这是设计规范 二： 满足securtiy
+        这里鉴权的第二种解决方法是： 把所有put方法设计成一个接口 统一鉴权
+        这里鉴权的第三种解决方法是： 公共和私人api分开放
+    8 api路径不是说article开头那这个api就属于article 得看逻辑 eg： users/{userId}/articles是article的api
+    9 通过id操作的可以把id放在路径 这样在securtiy过滤那儿就可以鉴定路径id和jwt id是否相同
+
+# 68 http请求中如何判断何时该用path传参？何时该用parameter传参？
+    参数含义和用途：查询参数通常用于筛选和排序数据，例如通过?sort参数按特定属性排序结果。路径参数通常用于标识资源和操作，例如通过/users/{id}路径参数获取特定用户的详细信息。因此，您应该根据参数的含义和用途来决定使用哪种类型的参数。
+
+    参数的可选性：查询参数通常是可选的，因为您可以使用默认值或省略它们。路径参数通常是必需的，因为它们标识了特定的资源或操作。因此，您应该根据参数的可选性来决定使用哪种类型的参数。
+
+    参数的数量：查询参数通常是多个的，因为您可以通过多个参数组合筛选和排序结果。路径参数通常是单个的，因为每个路径参数都标识了唯一的资源或操作。因此，您应该根据参数的数量来决定使用哪种类型的参数。
+
+    综上所述，查询参数和路径参数都有其特定的用途和优点，您应该根据具体的情况和需求来决定使用哪种类型的参数。通常，如果参数用于筛选和排序数据，则使用查询参数；如果参数用于标识资源和操作，则使用路径参数。在某些情况下，您可能需要同时使用这两种类型的参数来完成特定的操作。
+
+# 69 为什么要使用flyway？
+    Flyway是一个数据库迁移工具，它可以让你管理数据库的变更。它的主要目的是确保数据库的一致性，并简化升级和迁移过程。它使用SQL脚本来更新数据库结构，并支持跨多个数据库平台，可以轻松应用在多个环境中。使用Flyway可以确保你的数据库保持最新，并且可以在线上和线下环境中快速更新。举几个使用场景：1. 在持续交付的情况下，确保系统中的数据库是最新的；2. 跨多个数据库平台统一规范数据库结构；3. 快速迁移数据库结构和数据到新的环境。总之，使用Flyway可以确保你的数据库是最新的，可以轻松应用到多个环境中，并且可以跨多个数据库平台管理数据库结构变更。分别说说它是如何做到的：
+    1.它使用SQL脚本来更新数据库结构，可以在不同的数据库平台上使用，只要遵循脚本的语法规则。
+    2.它使用版本控制，以确保每一次变更都是精确的，并且每一个变更都可以被还原回上一个版本。
+    3.它使用校验和标记来确保每一个变更都是安全的，并且可以确保每一个SQL脚本都被正确执行。
+    4.它支持自动迁移，使你可以轻松地升级或迁移数据库，而不需要手动执行SQL脚本。
+    5.它支持撤销变更，可以轻松地撤销最近的一次变更，以便恢复到上一个版本。
